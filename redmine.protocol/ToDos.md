@@ -1,6 +1,6 @@
 - spring boot application mit externer DB und spring JDBCTemplate
 - Eingabe der Issue-ID per http-Param (Alternativ: Web-GUI)
-- API für Redmine
+- API fÃ¼r Redmine
 	http://www.redmine.org/projects/redmine/wiki/Rest_api_with_java
 	http://www.redmine.org/projects/redmine/wiki/Rest_api
 	https://github.com/taskadapter/redmine-java-api/blob/master/README.md
@@ -31,7 +31,7 @@
 	Fazit:
 	* Low-Level-API
 	* Tabellen nur mit externen Bibliotheken (boxable)
-	* keine Unterstützung für Paragraphen  
+	* keine UnterstÃ¼tzung fÃ¼r Paragraphen  
 - iText (AGPL, wie OTRS)
 	* http://developers.itextpdf.com/examples/itext-building-blocks/list-examples
 	Fazit:
@@ -42,14 +42,14 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 - Neues Projekt iTextile
 	* Nutzt iText
-	* Verwendet reguläre Ausdrücke von textile-j (https://svn.java.net/svn/textile-j~svn/)
+	* Verwendet regulÃ¤re AusdrÃ¼cke von textile-j (https://svn.java.net/svn/textile-j~svn/)
 	* konvertiert #123 in einen Link
 - Rendering
-	* Renderer für Wiki-Syntax
-	* Zeilenumbrüche / Paragraphen
+	* Renderer fÃ¼r Wiki-Syntax
+	* ZeilenumbrÃ¼che / Paragraphen
 	* Tabellen
 - Finalizing
-	* Beschreibung nicht mehr nötig, anstelle desssen wird das PDF an das Ticket angehängt
+	* Beschreibung nicht mehr nÃ¶tig, anstelle desssen wird das PDF an das Ticket angehÃ¤ngt
 - Sicherheit
 - Test MySQL Connection for Lifeline (running Jar directly on Lifeline)
 - Logging

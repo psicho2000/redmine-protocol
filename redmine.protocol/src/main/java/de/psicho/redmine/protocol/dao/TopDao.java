@@ -28,13 +28,14 @@ public class TopDao {
                 + "substring(issues.created_on,1,10)= ?";
 
         List<IssueJournalWrapper> issueJournals = jdbcTemplate.query(sql, new Object[] { changeDate, changeDate },
-                new RowMapper() {
-
+                (rs, rownum) -> {
+                    IssueJournalWrapper issueJournal = new IssueJournalWrapper();
+                    return issueJournal;
                 });
         IssueJournalWrapper issueJournal = new IssueJournalWrapper();
         Journal journal = JournalFactory.create(1);
-        journal.setCreatedOn(createdOn);
-        journal.setNotes(notes);
+        journal.setCreatedOn(null); // FIXME
+        journal.setNotes(null); // FIXME
         issueJournal.setIssueId(1);
         issueJournal.setJournal(journal);
 

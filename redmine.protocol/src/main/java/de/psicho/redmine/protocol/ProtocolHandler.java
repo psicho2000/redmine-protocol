@@ -23,6 +23,7 @@ import de.psicho.redmine.protocol.config.AppConfig;
 import de.psicho.redmine.protocol.dao.IssueDao;
 import de.psicho.redmine.protocol.dao.StatusDao;
 import de.psicho.redmine.protocol.dao.TopDao;
+import de.psicho.redmine.protocol.model.IssueJournalWrapper;
 import de.psicho.redmine.protocol.model.Validation;
 
 @RestController
@@ -60,9 +61,9 @@ public class ProtocolHandler {
             processStatus(curJournal);
         }
 
-        List<Journal> topJournals = topDao.findJournals(isoDate);
-        for (Journal curJournal : topJournals) {
-            processTop(curJournal);
+        List<IssueJournalWrapper> topJournals = topDao.findJournals(isoDate);
+        for (IssueJournalWrapper curJournal : topJournals) {
+            processTop(curJournal.getJournal());
         }
 
         closeProtocol();
@@ -103,7 +104,7 @@ public class ProtocolHandler {
 
         protocolStartDate = protocol.getStartDate();
         if (protocolStartDate == null) {
-            validation.add("Beginn muss ein gültiges Datum sein.");
+            validation.add("Beginn muss ein gï¿½ltiges Datum sein.");
         }
 
         List<String> mandatoryFields = getMandatoryFields();
