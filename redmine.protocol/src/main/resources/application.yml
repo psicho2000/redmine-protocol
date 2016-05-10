@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    driverClassName: com.mysql.jdbc.Driver
+# Lifeline
+#    url: jdbc:mysql://lifeline-herne:3306/redmine
+#    username: redmine
+#    password: xTdmThEzXjv7AaKT
+# Local - cannot access redmine db from remote
+    url: jdbc:mysql://localhost:3306/redmine
+    username: root
+    password: root
+
+redmine:
+  api:
+    url: http://redmine.lifeline-herne.de/
+    accesskey: 554067cb32616e18b0c977af2eb21a0096dfff40
+  protocol:
+    name: Protokoll
+    mandatory: Nummer,Anwesend,Essen,Ort,Moderation,Andacht
+    number: Nummer
+    closed: Erledigt
