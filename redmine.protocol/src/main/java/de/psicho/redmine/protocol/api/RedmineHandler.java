@@ -1,4 +1,4 @@
-package de.psicho.redmine.protocol.dao;
+package de.psicho.redmine.protocol.api;
 
 import org.springframework.stereotype.Component;
 

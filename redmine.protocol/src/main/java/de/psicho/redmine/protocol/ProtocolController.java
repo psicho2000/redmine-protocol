@@ -18,8 +18,8 @@ import com.taskadapter.redmineapi.bean.Issue;
 import com.taskadapter.redmineapi.bean.Journal;
 
 import de.psicho.redmine.iTextile.ITextExample;
+import de.psicho.redmine.protocol.api.IssueHandler;
 import de.psicho.redmine.protocol.config.AppConfig;
-import de.psicho.redmine.protocol.dao.IssueHandler;
 import de.psicho.redmine.protocol.dao.StatusDao;
 import de.psicho.redmine.protocol.dao.TopDao;
 import de.psicho.redmine.protocol.model.IssueJournalWrapper;
@@ -45,9 +45,6 @@ public class ProtocolController {
     @RequestMapping("/protocol/{issueId}")
     public String createProtocol(@PathVariable String issueId) {
         writeHeader();
-
-        // if (true)
-        // return output.toString();
 
         Validation validation = validateProtocol(issueId);
         if (!validation.isEmpty()) {
