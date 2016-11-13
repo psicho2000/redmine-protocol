@@ -1,3 +1,5 @@
+server:
+  port: 8090
 spring:
   datasource:
     driverClassName: com.mysql.jdbc.Driver
@@ -11,6 +13,12 @@ redmine:
     accesskey: accesskey
   protocol:
     name: Protokoll
-    mandatory: Nummer,Anwesend,Essen,Ort,Moderation,Andacht
+    mandatory:
+      - Nummer
+      - Anwesend
+      - Essen
+      - Ort
+      - Moderation
+      - Andacht
     number: Nummer
     closed: Erledigt

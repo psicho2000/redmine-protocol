@@ -24,7 +24,7 @@ public class StatusDao {
                 + "and substring(journals.created_on,1,10)= ?";
 
         List<Journal> journals = jdbcTemplate.query(sql, new Object[] { changeDate },
-                new BeanPropertyRowMapper(Journal.class));
+                new BeanPropertyRowMapper<Journal>(Journal.class));
 
         return journals;
     }
