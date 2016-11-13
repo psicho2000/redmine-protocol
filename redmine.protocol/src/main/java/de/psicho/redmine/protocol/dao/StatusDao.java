@@ -22,7 +22,6 @@ public class StatusDao {
                 + "inner join trackers on issues.tracker_id=trackers.id "
                 + "where journalized_type='Issue' and trackers.name='Aufgabe' "
                 + "and substring(journals.created_on,1,10)= ?";
-        System.out.println(sql);
         Object[] params = new Object[] { changeDate };
 
         return jdbcTemplate.query(sql, params, new BeanPropertyRowMapper<Journal>(Journal.class));

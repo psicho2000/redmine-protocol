@@ -3,10 +3,13 @@ package de.psicho.redmine.protocol.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 import de.psicho.redmine.protocol.ServiceMarker;
+import de.psicho.redmine.protocol.dao.IssueHandler;
+import de.psicho.redmine.protocol.dao.RedmineHandler;
 import de.psicho.redmine.protocol.dao.RepositoryMarker;
 import lombok.Getter;
 
@@ -32,5 +35,15 @@ public class AppConfig {
     String redmineProtocolClosed;
 
     @Autowired
-    MandatoryConfigurer mandatoryConf;
+    MandatoryConfigurer mandatoryConfigurer;
+
+    @Bean
+    public RedmineHandler redmineHandler() {
+        return new RedmineHandler(this);
+    }
+
+    @Bean
+    public IssueHandler issueHandler() {
+        return new IssueHandler(redmineHandler());
+    }
 }

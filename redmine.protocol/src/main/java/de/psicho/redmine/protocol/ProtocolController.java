@@ -19,7 +19,7 @@ import com.taskadapter.redmineapi.bean.Journal;
 
 import de.psicho.redmine.iTextile.ITextExample;
 import de.psicho.redmine.protocol.config.AppConfig;
-import de.psicho.redmine.protocol.dao.IssueDao;
+import de.psicho.redmine.protocol.dao.IssueHandler;
 import de.psicho.redmine.protocol.dao.StatusDao;
 import de.psicho.redmine.protocol.dao.TopDao;
 import de.psicho.redmine.protocol.model.IssueJournalWrapper;
@@ -28,7 +28,7 @@ import de.psicho.redmine.protocol.model.Validation;
 @RestController
 public class ProtocolController {
     @Autowired
-    IssueDao issueDao;
+    IssueHandler issueDao;
 
     @Autowired
     StatusDao statusDao;
@@ -43,10 +43,8 @@ public class ProtocolController {
     Issue protocol = null;
 
     @RequestMapping("/protocol/{issueId}")
-    private String createProtocol(@PathVariable String issueId) {
+    public String createProtocol(@PathVariable String issueId) {
         writeHeader();
-        StringBuffer output = new StringBuffer();
-        output.append(String.format("Erzeuge Protokoll für Ticket '%s'", issueId));
 
         // if (true)
         // return output.toString();
@@ -70,11 +68,16 @@ public class ProtocolController {
 
         closeProtocol();
 
-        String result = "Creating protocol for id: " + issueId;
-        result += "<br>Querying for date " + isoDate;
-        result += "<br># StatusItems: " + statusJournals.size();
-        result += "<br># TopItems: " + topJournals.size();
-        return result;
+        StringBuffer result = new StringBuffer();
+        result.append("Creating protocol for id: ");
+        result.append(issueId);
+        result.append("<br>Querying for date ");
+        result.append(isoDate);
+        result.append("<br># StatusItems: ");
+        result.append(statusJournals.size());
+        result.append("<br># TopItems: ");
+        result.append(topJournals.size());
+        return result.toString();
     }
 
     private Validation validateProtocol(String issueId) {
@@ -157,7 +160,7 @@ public class ProtocolController {
     }
 
     private List<String> getMandatoryFields() {
-        return appConfig.getMandatoryConf().getMandatory();
+        return appConfig.getMandatoryConfigurer().getMandatory();
     }
 
     private String dateToIso(Date date) {
