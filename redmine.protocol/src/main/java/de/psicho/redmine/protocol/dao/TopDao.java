@@ -30,13 +30,16 @@ public class TopDao {
         List<IssueJournalWrapper> issueJournals = jdbcTemplate.query(sql, new Object[] { changeDate, changeDate },
                 (rs, rownum) -> {
                     IssueJournalWrapper issueJournal = new IssueJournalWrapper();
+                    // FIXME continue here
                     return issueJournal;
                 });
+
+        // TODO set this block into the above lambda
         IssueJournalWrapper issueJournal = new IssueJournalWrapper();
         Journal journal = JournalFactory.create(1);
         journal.setCreatedOn(null); // FIXME
         journal.setNotes(null); // FIXME
-        issueJournal.setIssueId(1);
+        issueJournal.setIssueId(1); // FIXME
         issueJournal.setJournal(journal);
 
         return issueJournals;

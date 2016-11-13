@@ -24,6 +24,7 @@ public class StatusDao {
                 + "and substring(journals.created_on,1,10)= ?";
         Object[] params = new Object[] { changeDate };
 
+        // FIXME this currently crashes if there are any results - otherwise not
         return jdbcTemplate.query(sql, params, new BeanPropertyRowMapper<Journal>(Journal.class));
     }
 }
