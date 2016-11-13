@@ -2,15 +2,14 @@ package de.psicho.redmine.protocol;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.itextpdf.text.DocumentException;
@@ -27,7 +26,7 @@ import de.psicho.redmine.protocol.model.IssueJournalWrapper;
 import de.psicho.redmine.protocol.model.Validation;
 
 @RestController
-public class ProtocolHandler {
+public class ProtocolController {
     @Autowired
     IssueDao issueDao;
 
@@ -43,11 +42,15 @@ public class ProtocolHandler {
     Date protocolStartDate = null;
     Issue protocol = null;
 
-    @RequestMapping("/")
-    private String createProtocol(@RequestParam(value = "issueId", defaultValue = "") String issueId) {
+    @RequestMapping("/protocol/{issueId}")
+    private String createProtocol(@PathVariable String issueId) {
         writeHeader();
+        StringBuffer output = new StringBuffer();
+        output.append(String.format("Erzeuge Protokoll für Ticket '%s'", issueId));
+        appConfig.getMandatoryConf().getMandatory().forEach(output::append);
+
         if (true)
-            return "Datei geschrieben";
+            return output.toString();
 
         Validation validation = validateProtocol(issueId);
         if (!validation.isEmpty()) {
@@ -86,7 +89,6 @@ public class ProtocolHandler {
             validation.add("issueId muss eine Zahl sein.");
             return validation;
         }
-
         int ticketId = Integer.parseInt(issueId);
         protocol = issueDao.getIssue(ticketId);
         if (protocol == null) {
@@ -99,12 +101,12 @@ public class ProtocolHandler {
                     + appConfig.getRedmineProtocolName() + ").");
         }
         if (protocol.getAssignee() == null) {
-            validation.add("Das Ticket wurde an niemand zugewiesen.");
+            validation.add("Das Ticket wurde niemandem zugewiesen.");
         }
 
         protocolStartDate = protocol.getStartDate();
         if (protocolStartDate == null) {
-            validation.add("Beginn muss ein g�ltiges Datum sein.");
+            validation.add("Beginn muss ein gültiges Datum sein.");
         }
 
         List<String> mandatoryFields = getMandatoryFields();
@@ -150,9 +152,7 @@ public class ProtocolHandler {
     }
 
     private List<String> getMandatoryFields() {
-        String mandatoryString = appConfig.getRedmineProtocolMandatory();
-        List<String> mandatoryFields = Arrays.asList(mandatoryString.split("\\s*,\\s*"));
-        return mandatoryFields;
+        return appConfig.getMandatoryConf().getMandatory();
     }
 
     private String dateToIso(Date date) {

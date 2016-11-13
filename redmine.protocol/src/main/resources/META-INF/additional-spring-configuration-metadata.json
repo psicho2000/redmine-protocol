@@ -1,0 +1,32 @@
+{"properties": [
+  {
+    "name": "redmine.api.url",
+    "type": "java.lang.String",
+    "description": "The API url for Redmine"
+  },
+  {
+    "name": "redmine.api.accesskey",
+    "type": "java.lang.String",
+    "description": "The accesskey to access Redmine"
+  },
+  {
+    "name": "redmine.protocol.name",
+    "type": "java.lang.String",
+    "description": "The ticket type use for protocol"
+  },
+  {
+    "name": "redmine.protocol.mandatory",
+    "type": "java.util.List",
+    "description": "List field names of mandatory fields in issue"
+  },
+  {
+    "name": "redmine.protocol.number",
+    "type": "java.lang.String",
+    "description": "Field name for the protocol number"
+  },
+  {
+    "name": "redmine.protocol.closed",
+    "type": "java.lang.String",
+    "description": "Status name of closed issues"
+  }
+]}

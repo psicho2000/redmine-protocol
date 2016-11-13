@@ -1,5 +1,6 @@
 - spring boot application mit externer DB und spring JDBCTemplate
-- Eingabe der Issue-ID per http-Param (Alternativ: Web-GUI)
+- Eingabe der Issue-ID per Rest-Param (Alternativ: Web-GUI)
+    http://lifeline-herne.de:8090/protocol/{issueId}
 - API für Redmine
 	http://www.redmine.org/projects/redmine/wiki/Rest_api_with_java
 	http://www.redmine.org/projects/redmine/wiki/Rest_api
@@ -54,3 +55,8 @@
 - Test MySQL Connection for Lifeline (running Jar directly on Lifeline)
 - Logging
 - Autowiring
+
+
+######
+Warum geht Spring Boot 1.4.0-RELEASE nicht?
+Warum kann man in der pom.xml die Dependencies nicht automatisch erkennen?
