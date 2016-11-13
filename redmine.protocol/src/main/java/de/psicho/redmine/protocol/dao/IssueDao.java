@@ -23,6 +23,9 @@ public class IssueDao {
     IssueManager issueMgr = null;
     List<IssueStatus> statuses = null;
 
+    // TODO make RedmineManager Spring bean and use globally
+    // TODO rename to IssueManager
+
     private void init() {
         if (redmineMgr == null) {
             redmineMgr = RedmineManagerFactory.createWithApiKey(appConfig.getRedmineApiUrl(),

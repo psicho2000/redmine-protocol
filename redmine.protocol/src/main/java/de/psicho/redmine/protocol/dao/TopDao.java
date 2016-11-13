@@ -19,7 +19,7 @@ public class TopDao {
 
     public List<IssueJournalWrapper> findJournals(String changeDate) {
 
-        String sql = "select issues.id, journals. from journals "
+        String sql = "select distinct issues.id from journals "
                 + "inner join issues on journals.journalized_id=issues.id "
                 + "inner join trackers on issues.tracker_id=trackers.id "
                 + "where journalized_type='Issue' and trackers.name='TOP' and "

@@ -1,16 +1,7 @@
 server:
   port: 8090
-spring:
-  datasource:
-    driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://host:port/database
-    username: username
-    password: password
 
 redmine:
-  api:
-    url: http://redmine.lifeline-herne.de
-    accesskey: 554067cb32616e18b0c977af2eb21a0096dfff40
   protocol:
     name: Protokoll
     mandatory:
