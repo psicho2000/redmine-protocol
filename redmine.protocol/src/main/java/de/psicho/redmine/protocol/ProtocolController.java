@@ -47,10 +47,9 @@ public class ProtocolController {
         writeHeader();
         StringBuffer output = new StringBuffer();
         output.append(String.format("Erzeuge Protokoll für Ticket '%s'", issueId));
-        appConfig.getMandatoryConf().getMandatory().forEach(output::append);
 
-        if (true)
-            return output.toString();
+        // if (true)
+        // return output.toString();
 
         Validation validation = validateProtocol(issueId);
         if (!validation.isEmpty()) {
@@ -92,14 +91,20 @@ public class ProtocolController {
         int ticketId = Integer.parseInt(issueId);
         protocol = issueDao.getIssue(ticketId);
         if (protocol == null) {
-            validation.add("Ticket " + issueId + " konnte nicht gefunden werden.");
+            validation.add(String.format("Ticket '%d' konnte nicht gefunden werden.", issueId));
             return validation;
         }
 
         if (!protocol.getTracker().getName().equals(appConfig.getRedmineProtocolName())) {
-            validation.add("Das Ticket " + protocol.getId() + " ist kein Protokoll (Tracker = "
-                    + appConfig.getRedmineProtocolName() + ").");
+            validation.add(String.format("Das Ticket '%d' ist kein Protokoll (Tracker = '%s').", protocol.getId(),
+                    appConfig.getRedmineProtocolName()));
+            return validation;
         }
+
+        if (protocol.getStatusName().equals(appConfig.getRedmineProtocolClosed())) {
+            validation.add("Das Protokoll wurde bereits geschlossen.");
+        }
+
         if (protocol.getAssignee() == null) {
             validation.add("Das Ticket wurde niemandem zugewiesen.");
         }
@@ -113,7 +118,7 @@ public class ProtocolController {
         for (String field : mandatoryFields) {
             if (protocol.getCustomFieldByName(field) == null
                     || StringUtils.isBlank(protocol.getCustomFieldByName(field).getValue())) {
-                validation.add("Feld " + field + " muss angegeben werden.");
+                validation.add(String.format("Feld '%s' muss angegeben werden.", field));
             }
         }
 

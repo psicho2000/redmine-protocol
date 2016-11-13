@@ -9,8 +9,8 @@ spring:
 
 redmine:
   api:
-    url: url
-    accesskey: accesskey
+    url: http://redmine.lifeline-herne.de
+    accesskey: 554067cb32616e18b0c977af2eb21a0096dfff40
   protocol:
     name: Protokoll
     mandatory:
