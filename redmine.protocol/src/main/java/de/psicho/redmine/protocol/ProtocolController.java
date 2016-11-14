@@ -105,7 +105,7 @@ public class ProtocolController {
             validation.add("Das Protokoll wurde bereits geschlossen.");
         }
 
-        if (protocol.getAssignee() == null) {
+        if (protocol.getAssigneeId() == null) {
             validation.add("Das Ticket wurde niemandem zugewiesen.");
         }
 
