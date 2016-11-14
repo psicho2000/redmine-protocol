@@ -11,12 +11,12 @@ import de.psicho.redmine.protocol.ServiceMarker;
 import de.psicho.redmine.protocol.api.ApiMarker;
 import de.psicho.redmine.protocol.api.IssueHandler;
 import de.psicho.redmine.protocol.api.RedmineHandler;
-import de.psicho.redmine.protocol.dao.RepositoryMarker;
+import de.psicho.redmine.protocol.dao.DaoMarker;
 import lombok.Getter;
 
 @EnableAutoConfiguration
 @Configuration
-@ComponentScan(basePackageClasses = { ServiceMarker.class, RepositoryMarker.class, ApiMarker.class })
+@ComponentScan(basePackageClasses = { ServiceMarker.class, DaoMarker.class, ApiMarker.class })
 @Getter
 public class AppConfig {
 
