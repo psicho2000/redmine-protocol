@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.itextpdf.text.DocumentException;
 import com.taskadapter.redmineapi.bean.CustomField;
 import com.taskadapter.redmineapi.bean.Issue;
-import com.taskadapter.redmineapi.bean.Journal;
 
 import de.psicho.redmine.iTextile.ITextExample;
 import de.psicho.redmine.protocol.api.IssueHandler;
@@ -28,7 +27,7 @@ import de.psicho.redmine.protocol.model.Validation;
 @RestController
 public class ProtocolController {
     @Autowired
-    IssueHandler issueDao;
+    IssueHandler issueHandler;
 
     @Autowired
     StatusDao statusDao;
@@ -53,14 +52,14 @@ public class ProtocolController {
 
         String isoDate = dateToIso(protocolStartDate);
 
-        List<Journal> statusJournals = statusDao.findJournals(isoDate);
-        for (Journal curJournal : statusJournals) {
+        List<IssueJournalWrapper> statusJournals = statusDao.findJournals(isoDate);
+        for (IssueJournalWrapper curJournal : statusJournals) {
             processStatus(curJournal);
         }
 
         List<IssueJournalWrapper> topJournals = topDao.findJournals(isoDate);
         for (IssueJournalWrapper curJournal : topJournals) {
-            processTop(curJournal.getJournal());
+            processTop(curJournal);
         }
 
         closeProtocol();
@@ -89,7 +88,7 @@ public class ProtocolController {
             return validation;
         }
         int ticketId = Integer.parseInt(issueId);
-        protocol = issueDao.getIssue(ticketId);
+        protocol = issueHandler.getIssue(ticketId);
         if (protocol == null) {
             validation.add(String.format("Ticket '%d' konnte nicht gefunden werden.", issueId));
             return validation;
@@ -138,21 +137,40 @@ public class ProtocolController {
         }
     }
 
-    private void processStatus(Journal journal) {
+    private void processStatus(IssueJournalWrapper journal) {
         // TODO Auto-generated method stub
-
+        debugOutput(journal);
     }
 
-    private void processTop(Journal journal) {
+    private void processTop(IssueJournalWrapper journal) {
         // TODO Auto-generated method stub
+        debugOutput(journal);
+    }
+
+    private void debugOutput(IssueJournalWrapper journal) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Issue #");
+        sb.append(journal.getIssueId());
+        sb.append("\n");
+        sb.append("Subject: ");
+        sb.append(journal.getIssueSubject());
+        sb.append("\n");
+        if (journal.getJournal() != null && journal.getJournal().getNotes() != null) {
+            sb.append("Notes: ");
+            sb.append(journal.getJournal().getNotes());
+            sb.append("\n");
+        } else {
+            sb.append("No journal entry");
+        }
+        System.out.println(sb.toString());
     }
 
     private void closeProtocol() {
         if (protocol != null) {
             CustomField number = protocol.getCustomFieldByName(appConfig.getRedmineProtocolNumber());
             protocol.setSubject("Gemeinderat " + number.getValue() + " am " + dateToGer(protocolStartDate));
-            protocol.setStatusId(issueDao.getStatusByName(appConfig.getRedmineProtocolClosed()));
-            issueDao.updateIssue(protocol);
+            protocol.setStatusId(issueHandler.getStatusByName(appConfig.getRedmineProtocolClosed()));
+            issueHandler.updateIssue(protocol);
         }
     }
 

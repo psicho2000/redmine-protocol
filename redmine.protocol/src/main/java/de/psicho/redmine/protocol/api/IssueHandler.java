@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import com.taskadapter.redmineapi.Include;
 import com.taskadapter.redmineapi.IssueManager;
 import com.taskadapter.redmineapi.RedmineException;
 import com.taskadapter.redmineapi.bean.Issue;
@@ -11,18 +12,18 @@ import com.taskadapter.redmineapi.bean.IssueStatus;
 
 @Component
 public class IssueHandler {
-    IssueManager issueMgr = null;
+    IssueManager issueManager = null;
     List<IssueStatus> statuses = null;
 
     public IssueHandler(RedmineHandler redmineHandler) {
-        issueMgr = redmineHandler.getRedmineManager().getIssueManager();
+        issueManager = redmineHandler.getRedmineManager().getIssueManager();
     }
 
-    public Issue getIssue(Integer issueId) {
+    public Issue getIssue(Integer issueId, Include... include) {
         Issue issue = null;
 
         try {
-            issue = issueMgr.getIssueById(issueId);
+            issue = issueManager.getIssueById(issueId, include);
         } catch (RedmineException re) {
             re.printStackTrace();
         }
@@ -32,7 +33,7 @@ public class IssueHandler {
 
     public void updateIssue(Issue issue) {
         try {
-            issueMgr.update(issue);
+            issueManager.update(issue);
         } catch (RedmineException re) {
             re.printStackTrace();
         }
@@ -41,7 +42,7 @@ public class IssueHandler {
     public Integer getStatusByName(String statusName) {
         try {
             if (statuses == null) {
-                statuses = issueMgr.getStatuses();
+                statuses = issueManager.getStatuses();
             }
             for (IssueStatus status : statuses) {
                 if (status.getName().equals(statusName)) {

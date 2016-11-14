@@ -2,23 +2,11 @@ package de.psicho.redmine.protocol.model;
 
 import com.taskadapter.redmineapi.bean.Journal;
 
+import lombok.Data;
+
+@Data
 public class IssueJournalWrapper {
     Integer issueId;
+    String issueSubject;
     Journal journal;
-
-    public Integer getIssueId() {
-        return issueId;
-    }
-
-    public void setIssueId(Integer issueId) {
-        this.issueId = issueId;
-    }
-
-    public Journal getJournal() {
-        return journal;
-    }
-
-    public void setJournal(Journal journal) {
-        this.journal = journal;
-    }
 }
