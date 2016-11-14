@@ -160,7 +160,7 @@ public class ProtocolController {
             sb.append(journal.getJournal().getNotes());
             sb.append("\n");
         } else {
-            sb.append("No journal entry");
+            sb.append("No journal entry\n");
         }
         System.out.println(sb.toString());
     }
