@@ -11,7 +11,6 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import de.psicho.redmine.iTextile.command.Command;
-import de.psicho.redmine.iTextile.command.Header;
 import de.psicho.redmine.iTextile.command.Paragraph;
 import de.psicho.redmine.iTextile.command.Table;
 import de.psicho.redmine.iTextile.command.TextProperty;
@@ -29,31 +28,6 @@ public class iTextile {
 
     /**
      * <p>
-     * Prints a centered text
-     * 
-     * @param text
-     *            the text to print
-     * @param size
-     *            size of the text
-     * @param bold
-     *            flag whether the text shall be bold
-     * @param color
-     *            color of the text
-     * @throws IllegalStateException
-     *             if in table mode
-     */
-    public void addHeader(String text, int size, boolean bold, String color) {
-        if (isTableMode()) {
-            throw new IllegalStateException("Cannot add header in table mode.");
-        }
-
-        TextProperty property = TextProperty.builder().size(size).bold(bold).color(color).build();
-        Header header = new Header(text, property);
-        commands.add(header);
-    }
-
-    /**
-     * <p>
      * Prints text as new paragraph
      * 
      * @param text
@@ -67,12 +41,11 @@ public class iTextile {
      * @throws IllegalStateException
      *             if in table mode
      */
-    public void addParagraph(String text, int size, boolean bold, String color) {
+    public void addParagraph(String text, TextProperty property) {
         if (isTableMode()) {
             throw new IllegalStateException("Cannot add paragraph in table mode.");
         }
 
-        TextProperty property = TextProperty.builder().size(size).bold(bold).color(color).build();
         Paragraph paragraph = new Paragraph(text, property);
         commands.add(paragraph);
     }

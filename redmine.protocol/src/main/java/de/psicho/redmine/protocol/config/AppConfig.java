@@ -29,8 +29,23 @@ public class AppConfig {
     @Value("${redmine.protocol.name}")
     String redmineProtocolName;
 
-    @Value("${redmine.protocol.number}")
+    @Value("${redmine.protocol.fields.number}")
     String redmineProtocolNumber;
+
+    @Value("${redmine.protocol.fields.members}")
+    String redmineProtocolMembers;
+
+    @Value("${redmine.protocol.fields.meal}")
+    String redmineProtocolMeal;
+
+    @Value("${redmine.protocol.fields.location}")
+    String redmineProtocolLocation;
+
+    @Value("${redmine.protocol.fields.moderation}")
+    String redmineProtocolModeration;
+
+    @Value("${redmine.protocol.fields.devotion}")
+    String redmineProtocolDevotion;
 
     @Value("${redmine.protocol.closed}")
     String redmineProtocolClosed;

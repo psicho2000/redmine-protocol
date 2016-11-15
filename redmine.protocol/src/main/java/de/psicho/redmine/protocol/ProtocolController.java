@@ -1,7 +1,6 @@
 package de.psicho.redmine.protocol;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -12,11 +11,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
 import com.taskadapter.redmineapi.bean.CustomField;
 import com.taskadapter.redmineapi.bean.Issue;
 
-import de.psicho.redmine.iTextile.ITextExample;
+import de.psicho.redmine.iTextile.iTextile;
+import de.psicho.redmine.iTextile.command.TextProperty;
 import de.psicho.redmine.protocol.api.IssueHandler;
 import de.psicho.redmine.protocol.config.AppConfig;
 import de.psicho.redmine.protocol.dao.StatusDao;
@@ -26,6 +28,9 @@ import de.psicho.redmine.protocol.model.Validation;
 
 @RestController
 public class ProtocolController {
+    private final static String PROTOCOL_FILENAME = "results/Protokoll.pdf";
+    private final static String AGENDA_FILENAME = "results/Agenda.pdf";
+
     @Autowired
     IssueHandler issueHandler;
 
@@ -38,11 +43,14 @@ public class ProtocolController {
     @Autowired
     AppConfig appConfig;
 
+    iTextile iTextile;
+
     Date protocolStartDate = null;
     Issue protocol = null;
 
     @RequestMapping("/agenda")
     public String createAgenda() {
+        startITextile(AGENDA_FILENAME);
         // TODO create new protocol ticket
         // TODO create agenda.pdf
         return null;
@@ -50,12 +58,13 @@ public class ProtocolController {
 
     @RequestMapping("/protocol/{issueId}")
     public String createProtocol(@PathVariable String issueId) {
-        writeHeader();
-
         Validation validation = validateProtocol(issueId);
         if (!validation.isEmpty()) {
             return validation.render();
         }
+
+        startITextile(PROTOCOL_FILENAME);
+        writeHeader();
 
         String isoDate = dateToIso(protocolStartDate);
 
@@ -82,6 +91,12 @@ public class ProtocolController {
         result.append("<br># TopItems: ");
         result.append(topJournals.size());
         return result.toString();
+    }
+
+    private void startITextile(String filename) {
+        File file = new File(filename);
+        file.getParentFile().mkdirs();
+        iTextile = new iTextile(filename);
     }
 
     private Validation validateProtocol(String issueId) {
@@ -133,16 +148,36 @@ public class ProtocolController {
     }
 
     private void writeHeader() {
-        // TODO Auto-generated method stub
-        String DEST = "results/paragraph_spacebefore.pdf";
+        heading();
 
-        File file = new File(DEST);
-        file.getParentFile().mkdirs();
-        try {
-            new ITextExample().createPdf(DEST);
-        } catch (IOException | DocumentException ex) {
-            ex.printStackTrace();
-        }
+        StringBuilder title = new StringBuilder();
+        title.append("Gemeinderat am ");
+        title.append(dateToGer(protocolStartDate));
+        title.append(" bei ");
+        title.append(getProtocolValue(appConfig.getRedmineProtocolLocation()));
+        title.append("             "); // FIXME
+        title.append(getProtocolValue(appConfig.getRedmineProtocolNumber()));
+        paragraph(title.toString());
+
+        StringBuilder meal = new StringBuilder();
+        meal.append("Essen: ");
+        meal.append(getProtocolValue(appConfig.getRedmineProtocolMeal()));
+        paragraph(meal.toString());
+
+        StringBuilder members = new StringBuilder();
+        members.append("Anwesend: ");
+        members.append(getProtocolValue(appConfig.getRedmineProtocolMembers()));
+        paragraph(members.toString());
+    }
+
+    private void paragraph(String title) {
+        iTextile.addParagraph(title,
+                TextProperty.builder().size(12.0f).style(Font.NORMAL).color(BaseColor.BLACK).build());
+    }
+
+    private void heading() {
+        iTextile.addParagraph("PROTOKOLL", TextProperty.builder().size(18.0f).style(Font.BOLD).color(BaseColor.BLUE)
+                .alignment(Element.ALIGN_CENTER).build());
     }
 
     private void processStatus(IssueJournalWrapper journal) {
@@ -175,11 +210,20 @@ public class ProtocolController {
 
     private void closeProtocol() {
         if (protocol != null) {
-            CustomField number = protocol.getCustomFieldByName(appConfig.getRedmineProtocolNumber());
-            protocol.setSubject("Gemeinderat " + number.getValue() + " am " + dateToGer(protocolStartDate));
+            StringBuilder subject = new StringBuilder();
+            subject.append("Gemeinderat ");
+            subject.append(getProtocolValue(appConfig.getRedmineProtocolNumber()));
+            subject.append(" am ");
+            subject.append(dateToGer(protocolStartDate));
+            protocol.setSubject(subject.toString());
             protocol.setStatusId(issueHandler.getStatusByName(appConfig.getRedmineProtocolClosed()));
             issueHandler.updateIssue(protocol);
         }
+    }
+
+    private String getProtocolValue(String fieldName) {
+        CustomField field = protocol.getCustomFieldByName(fieldName);
+        return field.getValue();
     }
 
     private List<String> getMandatoryFields() {

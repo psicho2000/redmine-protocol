@@ -11,5 +11,11 @@ redmine:
       - Ort
       - Moderation
       - Andacht
-    number: Nummer
+    fields:
+      number: Nummer
+      members: Anwesend
+      meal: Essen
+      location: Ort
+      moderation: Moderation
+      devotion: Andacht
     closed: Erledigt

@@ -28,6 +28,7 @@ public class ITextExample {
         Document document = new Document();
         PdfWriter.getInstance(document, new FileOutputStream(filename));
         document.open();
+
         Paragraph paragraph1 = new Paragraph("First paragraph" + LOREM_IPSUM);
         Paragraph paragraph2 = new Paragraph("Second paragraph" + LOREM_IPSUM);
         paragraph2.setSpacingBefore(40f);
