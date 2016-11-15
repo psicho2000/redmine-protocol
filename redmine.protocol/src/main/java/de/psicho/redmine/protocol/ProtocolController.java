@@ -41,6 +41,13 @@ public class ProtocolController {
     Date protocolStartDate = null;
     Issue protocol = null;
 
+    @RequestMapping("/agenda")
+    public String createAgenda() {
+        // TODO create new protocol ticket
+        // TODO create agenda.pdf
+        return null;
+    }
+
     @RequestMapping("/protocol/{issueId}")
     public String createProtocol(@PathVariable String issueId) {
         writeHeader();
