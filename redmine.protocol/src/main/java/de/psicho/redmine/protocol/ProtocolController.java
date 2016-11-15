@@ -62,7 +62,8 @@ public class ProtocolController {
             processTop(curJournal);
         }
 
-        closeProtocol();
+        // FIXME temporarily don't close the protocol
+        // closeProtocol();
 
         StringBuffer result = new StringBuffer();
         result.append("Creating protocol for id: ");
