@@ -7,11 +7,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-import de.psicho.redmine.protocol.ServiceMarker;
 import de.psicho.redmine.protocol.api.ApiMarker;
 import de.psicho.redmine.protocol.api.IssueHandler;
 import de.psicho.redmine.protocol.api.RedmineHandler;
 import de.psicho.redmine.protocol.dao.DaoMarker;
+import de.psicho.redmine.protocol.service.ServiceMarker;
 import lombok.Getter;
 
 @EnableAutoConfiguration

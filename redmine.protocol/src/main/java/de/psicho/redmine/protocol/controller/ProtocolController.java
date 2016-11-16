@@ -1,11 +1,9 @@
-package de.psicho.redmine.protocol;
+package de.psicho.redmine.protocol.controller;
 
 import java.io.File;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,10 +22,11 @@ import de.psicho.redmine.protocol.config.AppConfig;
 import de.psicho.redmine.protocol.dao.StatusDao;
 import de.psicho.redmine.protocol.dao.TopDao;
 import de.psicho.redmine.protocol.model.IssueJournalWrapper;
-import de.psicho.redmine.protocol.model.Validation;
+import de.psicho.redmine.protocol.utils.DateUtils;
 
 @RestController
 public class ProtocolController {
+
     private final static String PROTOCOL_FILENAME = "results/Protokoll.pdf";
     private final static String AGENDA_FILENAME = "results/Agenda.pdf";
 
@@ -42,6 +41,9 @@ public class ProtocolController {
 
     @Autowired
     AppConfig appConfig;
+
+    @Autowired
+    Validator validator;
 
     iTextile iTextile;
 
@@ -58,15 +60,12 @@ public class ProtocolController {
 
     @RequestMapping("/protocol/{issueId}")
     public String createProtocol(@PathVariable String issueId) {
-        Validation validation = validateProtocol(issueId);
-        if (!validation.isEmpty()) {
-            return validation.render();
-        }
+        protocol = validator.validate(issueId);
 
         startITextile(PROTOCOL_FILENAME);
         writeHeader();
 
-        String isoDate = dateToIso(protocolStartDate);
+        String isoDate = DateUtils.dateToIso(protocolStartDate);
 
         List<IssueJournalWrapper> statusJournals = statusDao.findJournals(isoDate);
         for (IssueJournalWrapper curJournal : statusJournals) {
@@ -80,6 +79,12 @@ public class ProtocolController {
 
         // FIXME temporarily don't close the protocol
         // closeProtocol();
+
+        return createResponse(issueId, isoDate, statusJournals, topJournals);
+    }
+
+    private String createResponse(String issueId, String isoDate, List<IssueJournalWrapper> statusJournals,
+        List<IssueJournalWrapper> topJournals) {
 
         StringBuffer result = new StringBuffer();
         result.append("Creating protocol for id: ");
@@ -99,60 +104,12 @@ public class ProtocolController {
         iTextile = new iTextile(filename);
     }
 
-    private Validation validateProtocol(String issueId) {
-        Validation validation = new Validation();
-
-        if (StringUtils.isBlank(issueId)) {
-            validation.add("Der Parameter issueId muss angegeben sein.");
-            return validation;
-        }
-        if (!StringUtils.isNumeric(issueId)) {
-            validation.add("issueId muss eine Zahl sein.");
-            return validation;
-        }
-        int ticketId = Integer.parseInt(issueId);
-        protocol = issueHandler.getIssue(ticketId);
-        if (protocol == null) {
-            validation.add(String.format("Ticket '%d' konnte nicht gefunden werden.", issueId));
-            return validation;
-        }
-
-        if (!protocol.getTracker().getName().equals(appConfig.getRedmineProtocolName())) {
-            validation.add(String.format("Das Ticket '%d' ist kein Protokoll (Tracker = '%s').", protocol.getId(),
-                    appConfig.getRedmineProtocolName()));
-            return validation;
-        }
-
-        if (protocol.getStatusName().equals(appConfig.getRedmineProtocolClosed())) {
-            validation.add("Das Protokoll wurde bereits geschlossen.");
-        }
-
-        if (protocol.getAssigneeId() == null) {
-            validation.add("Das Ticket wurde niemandem zugewiesen.");
-        }
-
-        protocolStartDate = protocol.getStartDate();
-        if (protocolStartDate == null) {
-            validation.add("Beginn muss ein gültiges Datum sein.");
-        }
-
-        List<String> mandatoryFields = getMandatoryFields();
-        for (String field : mandatoryFields) {
-            if (protocol.getCustomFieldByName(field) == null
-                    || StringUtils.isBlank(protocol.getCustomFieldByName(field).getValue())) {
-                validation.add(String.format("Feld '%s' muss angegeben werden.", field));
-            }
-        }
-
-        return validation;
-    }
-
     private void writeHeader() {
         heading();
 
         StringBuilder title = new StringBuilder();
         title.append("Gemeinderat am ");
-        title.append(dateToGer(protocolStartDate));
+        title.append(DateUtils.dateToGer(protocolStartDate));
         title.append(" bei ");
         title.append(getProtocolValue(appConfig.getRedmineProtocolLocation()));
         title.append("             "); // FIXME
@@ -171,41 +128,20 @@ public class ProtocolController {
     }
 
     private void paragraph(String title) {
-        iTextile.addParagraph(title,
-                TextProperty.builder().size(12.0f).style(Font.NORMAL).color(BaseColor.BLACK).build());
+        iTextile.addParagraph(title, TextProperty.builder().size(12.0f).style(Font.NORMAL).color(BaseColor.BLACK).build());
     }
 
     private void heading() {
-        iTextile.addParagraph("PROTOKOLL", TextProperty.builder().size(18.0f).style(Font.BOLD).color(BaseColor.BLUE)
-                .alignment(Element.ALIGN_CENTER).build());
+        iTextile.addParagraph("PROTOKOLL",
+            TextProperty.builder().size(18.0f).style(Font.BOLD).color(BaseColor.BLUE).alignment(Element.ALIGN_CENTER).build());
     }
 
     private void processStatus(IssueJournalWrapper journal) {
         // TODO Auto-generated method stub
-        debugOutput(journal);
     }
 
     private void processTop(IssueJournalWrapper journal) {
         // TODO Auto-generated method stub
-        debugOutput(journal);
-    }
-
-    private void debugOutput(IssueJournalWrapper journal) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Issue #");
-        sb.append(journal.getIssueId());
-        sb.append("\n");
-        sb.append("Subject: ");
-        sb.append(journal.getIssueSubject());
-        sb.append("\n");
-        if (journal.getJournal() != null && journal.getJournal().getNotes() != null) {
-            sb.append("Notes: ");
-            sb.append(journal.getJournal().getNotes());
-            sb.append("\n");
-        } else {
-            sb.append("No journal entry\n");
-        }
-        System.out.println(sb.toString());
     }
 
     private void closeProtocol() {
@@ -214,7 +150,7 @@ public class ProtocolController {
             subject.append("Gemeinderat ");
             subject.append(getProtocolValue(appConfig.getRedmineProtocolNumber()));
             subject.append(" am ");
-            subject.append(dateToGer(protocolStartDate));
+            subject.append(DateUtils.dateToGer(protocolStartDate));
             protocol.setSubject(subject.toString());
             protocol.setStatusId(issueHandler.getStatusByName(appConfig.getRedmineProtocolClosed()));
             issueHandler.updateIssue(protocol);
@@ -226,31 +162,4 @@ public class ProtocolController {
         return field.getValue();
     }
 
-    private List<String> getMandatoryFields() {
-        return appConfig.getMandatoryConfigurer().getMandatory();
-    }
-
-    private String dateToIso(Date date) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-
-        String isoDate = cal.get(Calendar.YEAR) + "-" + zeroPad(cal.get(Calendar.MONTH) + 1) + "-"
-                + zeroPad(cal.get(Calendar.DAY_OF_MONTH));
-
-        return isoDate;
-    }
-
-    private String dateToGer(Date date) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-
-        String isoDate = zeroPad(cal.get(Calendar.DAY_OF_MONTH)) + "." + zeroPad(cal.get(Calendar.MONTH) + 1) + "."
-                + cal.get(Calendar.YEAR);
-
-        return isoDate;
-    }
-
-    private String zeroPad(Integer input) {
-        return StringUtils.leftPad(input.toString(), 2, "0");
-    }
 }
