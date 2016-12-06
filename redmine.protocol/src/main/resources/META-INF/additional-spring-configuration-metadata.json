@@ -17,16 +17,41 @@
   {
     "name": "redmine.protocol.mandatory",
     "type": "java.util.List",
-    "description": "List field names of mandatory fields in issue"
-  },
-  {
-    "name": "redmine.protocol.number",
-    "type": "java.lang.String",
-    "description": "Field name for the protocol number"
+    "description": "List of field names of mandatory fields in issue"
   },
   {
     "name": "redmine.protocol.closed",
     "type": "java.lang.String",
     "description": "Status name of closed issues"
+  },
+  {
+    "name": "redmine.protocol.fields.number",
+    "type": "java.lang.String",
+    "description": "Field name for the protocol number"
+  },
+  {
+    "name": "redmine.protocol.fields.members",
+    "type": "java.lang.String",
+    "description": "Field name for the meeting's attendants"
+  },
+  {
+    "name": "redmine.protocol.fields.meal",
+    "type": "java.lang.String",
+    "description": "Field name describing meal responsibilites"
+  },
+  {
+    "name": "redmine.protocol.fields.location",
+    "type": "java.lang.String",
+    "description": "Field name for the location of the meeting"
+  },
+  {
+    "name": "redmine.protocol.fields.moderation",
+    "type": "java.lang.String",
+    "description": "Field name for the person responsible for moderation"
+  },
+  {
+    "name": "redmine.protocol.fields.devotion",
+    "type": "java.lang.String",
+    "description": "Field name for the person responsible for devotion"
   }
 ]}
