@@ -59,4 +59,3 @@
 
 ######
 Warum geht Spring Boot 1.4.0-RELEASE nicht?
-Warum kann man in der pom.xml die Dependencies nicht automatisch erkennen?

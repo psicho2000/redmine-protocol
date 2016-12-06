@@ -2,21 +2,14 @@ package de.psicho.redmine.protocol.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-import de.psicho.redmine.protocol.api.ApiMarker;
 import de.psicho.redmine.protocol.api.IssueHandler;
 import de.psicho.redmine.protocol.api.RedmineHandler;
-import de.psicho.redmine.protocol.dao.DaoMarker;
-import de.psicho.redmine.protocol.service.ServiceMarker;
 import lombok.Getter;
 
-@EnableAutoConfiguration
 @Configuration
-@ComponentScan(basePackageClasses = { ServiceMarker.class, DaoMarker.class, ApiMarker.class })
 @Getter
 public class AppConfig {
 

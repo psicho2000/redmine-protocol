@@ -12,5 +12,6 @@ import lombok.Data;
 @ConfigurationProperties(prefix = "redmine.protocol")
 @Data
 public class MandatoryConfigurer {
+
     private List<String> mandatory = new ArrayList<String>();
 }

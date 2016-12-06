@@ -61,6 +61,7 @@ public class ProtocolController {
     @RequestMapping("/protocol/{issueId}")
     public String createProtocol(@PathVariable String issueId) {
         protocol = validator.validate(issueId);
+        protocolStartDate = protocol.getStartDate();
 
         startITextile(PROTOCOL_FILENAME);
         writeHeader();
