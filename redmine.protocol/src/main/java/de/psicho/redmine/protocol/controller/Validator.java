@@ -48,11 +48,11 @@ public class Validator {
         }
 
         if (protocol.getAssigneeId() == null) {
-            validation.add("Das Ticket wurde niemandem zugewiesen.");
+            validation.add("Das Protokoll wurde niemandem zugewiesen. Es muss dem Protokollschreiber entsprechen.");
         }
 
         if (protocol.getStartDate() == null) {
-            validation.add("Beginn muss ein gültiges Datum sein.");
+            validation.add("'Beginn' muss ein gültiges Datum sein und dem Tag des Meetings entsprechen.");
         }
 
         List<String> mandatoryFields = appConfig.getMandatoryConfigurer().getMandatory();
@@ -62,6 +62,7 @@ public class Validator {
                 validation.add(String.format("Feld '%s' muss angegeben werden.", field));
             }
         }
+
         return validation;
     }
 

@@ -1,7 +1,3 @@
-- Validierungenen:
-	Pflichtparameter angegeben (s. Redmine-Wiki)
-	* Zugewiesen an 
-	* Beginn
 - Neues Projekt iTextile
     * Nutzt iText
     * Verwendet reguläre Ausdrücke von textile-j (https://svn.java.net/svn/textile-j~svn/)
