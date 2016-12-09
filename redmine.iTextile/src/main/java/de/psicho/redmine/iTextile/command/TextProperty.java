@@ -12,9 +12,19 @@ import lombok.Getter;
 @Getter
 public class TextProperty {
 
-    private FontFamily font = FontFamily.HELVETICA;
-    private float size = 12.0f;
-    private int style = Font.NORMAL;
-    private BaseColor color = BaseColor.BLACK;
-    private int alignment = Element.ALIGN_LEFT;
+    private FontFamily font;
+    private float size;
+    private int style;
+    private BaseColor color;
+    private int alignment;
+
+    // https://reinhard.codes/2016/07/13/using-lomboks-builder-annotation-with-default-values/
+    public static class TextPropertyBuilder {
+
+        private FontFamily font = FontFamily.HELVETICA;
+        private float size = 12.0f;
+        private int style = Font.NORMAL;
+        private BaseColor color = BaseColor.BLACK;
+        private int alignment = Element.ALIGN_LEFT;
+    }
 }

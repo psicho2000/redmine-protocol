@@ -3,6 +3,7 @@ package de.psicho.redmine.protocol.controller;
 import java.io.File;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -62,26 +63,43 @@ public class ProtocolController {
     public String createProtocol(@PathVariable String issueId) {
         protocol = validator.validate(issueId);
         protocolStartDate = protocol.getStartDate();
-
-        startITextile(PROTOCOL_FILENAME);
-        writeHeader();
-
         String isoDate = DateUtils.dateToIso(protocolStartDate);
 
+        startITextile(PROTOCOL_FILENAME);
+        writeDocumentHeader();
+        // FIXME fix bug with IndexOutOfBounds
+        // startTable();
+
         List<IssueJournalWrapper> statusJournals = statusDao.findJournals(isoDate);
-        for (IssueJournalWrapper curJournal : statusJournals) {
-            processStatus(curJournal);
-        }
+        // FIXME fix bug with IndexOutOfBounds
+        // processStatus(statusJournals);
 
         List<IssueJournalWrapper> topJournals = topDao.findJournals(isoDate);
-        for (IssueJournalWrapper curJournal : topJournals) {
-            processTop(curJournal);
-        }
+        processTop(topJournals);
+
+        // FIXME fix bug with IndexOutOfBounds
+        // endTable();
+        finalizeITextile();
 
         // FIXME temporarily don't close the protocol
         // closeProtocol();
 
         return createResponse(issueId, isoDate, statusJournals, topJournals);
+    }
+
+    private void startTable() {
+        iTextile.startTable(3);
+
+        TextProperty format = TextProperty.builder().style(Font.BOLD).build();
+        iTextile.setTableHeader(format, BaseColor.GRAY, "Nr.", "TOP / Beschluss", "Verantw.");
+
+        String moderation = getProtocolValue(appConfig.getRedmineProtocolModeration());
+        String devotion = getProtocolValue(appConfig.getRedmineProtocolDevotion());
+        iTextile.addTableRow("---", "Moderation / Andacht", moderation + "/" + devotion);
+    }
+
+    private void endTable() {
+        iTextile.endTable();
     }
 
     private String createResponse(String issueId, String isoDate, List<IssueJournalWrapper> statusJournals,
@@ -105,7 +123,11 @@ public class ProtocolController {
         iTextile = new iTextile(filename);
     }
 
-    private void writeHeader() {
+    private void finalizeITextile() {
+        iTextile.createFile();
+    }
+
+    private void writeDocumentHeader() {
         heading();
 
         StringBuilder title = new StringBuilder();
@@ -133,16 +155,30 @@ public class ProtocolController {
     }
 
     private void heading() {
-        iTextile.addParagraph("PROTOKOLL",
+        iTextile.addParagraph("P    R    O    T    O    K    O    L    L",
             TextProperty.builder().size(18.0f).style(Font.BOLD).color(BaseColor.BLUE).alignment(Element.ALIGN_CENTER).build());
     }
 
-    private void processStatus(IssueJournalWrapper journal) {
-        // TODO Auto-generated method stub
+    private void processStatus(List<IssueJournalWrapper> statusJournals) {
+        String statusContent = statusJournals.stream().map(this::appendJournal).collect(Collectors.joining("\r\n"));
+        iTextile.addTableRow("---", statusContent, getProtocolValue(appConfig.getRedmineProtocolModeration()));
     }
 
-    private void processTop(IssueJournalWrapper journal) {
-        // TODO Auto-generated method stub
+    private String appendJournal(IssueJournalWrapper status) {
+        StringBuilder statusContent = new StringBuilder();
+        statusContent.append(status.getIssueId());
+        statusContent.append("(");
+        statusContent.append(status.getIssueSubject());
+        statusContent.append(")");
+        statusContent.append("\r\n");
+        statusContent.append(status.getJournal().getNotes());
+        return statusContent.toString();
+    }
+
+    private void processTop(List<IssueJournalWrapper> topJournals) {
+        for (IssueJournalWrapper top : topJournals) {
+            // FIXME
+        }
     }
 
     private void closeProtocol() {

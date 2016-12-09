@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -59,6 +60,22 @@ public class iTextile {
     }
 
     /**
+     * <p>Sets the formatting for the given column
+     * 
+     * @param colNum zero based number of the column
+     * @param formatting formatting for the column
+     * @throws IllegalStateException if not in table mode
+     * @throws IndexOutOfBoundsException if colNum < 0 or colNum >= number of columns
+     */
+    public void setTableColumnFormat(int colNum, TextProperty formatting) {
+        if (!isTableMode()) {
+            throw new IllegalStateException("Not in table mode, cannot add row.");
+        }
+
+        table.setColumnFormat(colNum, formatting);
+    }
+
+    /**
      * @param cells an input for each cell
      * @throws IllegalStateException if not in table mode
      * @throws IllegalArgumentException if number of cells != number of columns
@@ -69,6 +86,36 @@ public class iTextile {
         }
 
         table.addRow(Arrays.asList(cells));
+    }
+
+    /**
+     * @param backgroundColor background color for the row
+     * @param cells an input for each cell
+     * @throws IllegalStateException if not in table mode
+     * @throws IllegalArgumentException if number of cells != number of columns
+     */
+    public void addTableRow(BaseColor backgroundColor, String... cells) {
+        if (!isTableMode()) {
+            throw new IllegalStateException("Not in table mode, cannot add row.");
+        }
+
+        table.addRow(Arrays.asList(cells), backgroundColor);
+    }
+
+    /**
+     * <p>Sets a header. If not set, header is inserted as first row. If already set, old header is overwritten.
+     * 
+     * @param formatting formatting of each cell of the header row
+     * @param backgroundColor background color of the header row
+     * @param cells contents for each cell of the header row
+     * @throws IllegalArgumentException if number of cells != number of columns
+     */
+    public void setTableHeader(TextProperty formatting, BaseColor backgroundColor, String... cells) {
+        if (!isTableMode()) {
+            throw new IllegalStateException("Not in table mode, cannot add row.");
+        }
+
+        table.setHeader(Arrays.asList(cells), formatting, backgroundColor);
     }
 
     /**

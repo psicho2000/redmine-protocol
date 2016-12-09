@@ -69,8 +69,8 @@ public class ITextExample {
         Anchor anchor = new Anchor(anchorChunk);
         anchor.setReference("http://redmine.lifeline-herne.de/issues/463");
         paragraph.add(anchor);
-        document.add(paragraph);
 
+        document.add(paragraph);
         document.add(coloredElement);
         document.add(coloredList);
         document.add(numberedList);

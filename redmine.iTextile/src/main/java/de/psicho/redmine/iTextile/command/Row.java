@@ -1,12 +1,16 @@
 package de.psicho.redmine.iTextile.command;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import com.itextpdf.text.BaseColor;
+
 import lombok.Data;
+import lombok.NonNull;
 
 @Data
-class Row {
+public class Row {
 
-    private List<String> cells = new ArrayList<>();
+    private BaseColor backgroundColor;
+    @NonNull
+    private List<Cell> cells;
 }
