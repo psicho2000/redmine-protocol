@@ -6,6 +6,7 @@ import java.util.List;
 import com.itextpdf.text.Document;
 
 public class Table implements Command {
+
     private int columns;
     private List<Row> rows = new ArrayList<>();
 
@@ -16,29 +17,29 @@ public class Table implements Command {
 
     /**
      * @param columns
-     *            number of columns the table will be created with
+     *        number of columns the table will be created with
      * @throws IllegalArgumentException
-     *             if number of columns <= 0
+     *         if number of columns <= 0
      */
     public Table(int columns) {
         if (columns <= 0) {
             throw new IllegalArgumentException(
-                    String.format("Number of columns must be greater 0. But %d was provided.", columns));
+                String.format("Number of columns must be greater 0. But %d was provided.", columns));
         }
         this.columns = columns;
     }
 
     /**
      * @param cells
-     *            an input for each cell
+     *        an input for each cell
      * @throws IllegalArgumentException
-     *             if number of cells != number of columns
+     *         if number of cells != number of columns
      */
     public void addRow(List<String> cells) {
         int rowSize = cells.size();
         if (rowSize != columns) {
             throw new IllegalArgumentException(
-                    String.format("Table has %d columns, but %d cells have been provided.", columns, rowSize));
+                String.format("Table has %d columns, but %d cells have been provided.", columns, rowSize));
         }
 
         Row row = new Row();

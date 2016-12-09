@@ -7,5 +7,6 @@ import lombok.Data;
 
 @Data
 class Row {
+
     private List<String> cells = new ArrayList<>();
 }

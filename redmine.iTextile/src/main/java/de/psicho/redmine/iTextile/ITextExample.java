@@ -18,10 +18,11 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfWriter;
 
 public class ITextExample {
-    private static String LOREM_IPSUM = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.";
+
+    private static String LOREM_IPSUM =
+        "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.";
 
     /**
-     *
      * @author Bruno Lowagie (iText Software)
      */
     public void createPdf(String filename) throws IOException, DocumentException {
@@ -37,7 +38,7 @@ public class ITextExample {
         List numberedList = new List(true, 20);
         numberedList.add(new ListItem("First line"));
         numberedList.add(new ListItem(
-                "The second line is longer to see what happens once the end of the line is reached. Will it start on a new line?"));
+            "The second line is longer to see what happens once the end of the line is reached. Will it start on a new line?"));
         numberedList.add(new ListItem("Third line"));
 
         List bulletList = new List(false, 20);

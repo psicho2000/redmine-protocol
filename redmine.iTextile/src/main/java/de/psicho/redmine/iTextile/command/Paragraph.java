@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class Paragraph implements Command {
+
     final private String text;
     final private TextProperty property;
 

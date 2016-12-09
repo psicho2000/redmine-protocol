@@ -16,6 +16,7 @@ import de.psicho.redmine.iTextile.command.Table;
 import de.psicho.redmine.iTextile.command.TextProperty;
 
 public class iTextile {
+
     private String filename;
     private List<Command> commands;
     private Table table;
@@ -30,16 +31,11 @@ public class iTextile {
      * <p>
      * Prints text as new paragraph
      * 
-     * @param text
-     *            the text to print
-     * @param size
-     *            size of the text
-     * @param bold
-     *            flag whether the text shall be bold
-     * @param color
-     *            color of the text
-     * @throws IllegalStateException
-     *             if in table mode
+     * @param text the text to print
+     * @param size size of the text
+     * @param bold flag whether the text shall be bold
+     * @param color color of the text
+     * @throws IllegalStateException if in table mode
      */
     public void addParagraph(String text, TextProperty property) {
         if (isTableMode()) {
@@ -51,13 +47,9 @@ public class iTextile {
     }
 
     /**
-     * @param columns
-     *            number of columns the table will be created with
-     * @throws IllegalStateException
-     *             if already in table mode
-     * @throws IllegalArgumentException
-     *             if number of columns <= 0
-     * 
+     * @param columns number of columns the table will be created with
+     * @throws IllegalStateException if already in table mode
+     * @throws IllegalArgumentException if number of columns <= 0
      */
     public void startTable(int columns) {
         if (isTableMode()) {
@@ -68,13 +60,9 @@ public class iTextile {
     }
 
     /**
-     * @param cells
-     *            an input for each cell
-     * @throws IllegalStateException
-     *             if not in table mode
-     * @throws IllegalArgumentException
-     *             if number of cells != number of columns
-     * 
+     * @param cells an input for each cell
+     * @throws IllegalStateException if not in table mode
+     * @throws IllegalArgumentException if number of cells != number of columns
      */
     public void addTableRow(String... cells) {
         if (!isTableMode()) {
@@ -85,8 +73,7 @@ public class iTextile {
     }
 
     /**
-     * @throws IllegalStateException
-     *             if not in table mode
+     * @throws IllegalStateException if not in table mode
      */
     public void endTable() {
         if (!isTableMode()) {

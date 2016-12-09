@@ -11,6 +11,7 @@ import lombok.Getter;
 @Builder
 @Getter
 public class TextProperty {
+
     private FontFamily font = FontFamily.HELVETICA;
     private float size = 12.0f;
     private int style = Font.NORMAL;
