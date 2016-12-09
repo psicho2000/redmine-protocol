@@ -16,10 +16,8 @@ public class Table implements Command {
     }
 
     /**
-     * @param columns
-     *        number of columns the table will be created with
-     * @throws IllegalArgumentException
-     *         if number of columns <= 0
+     * @param columns number of columns the table will be created with
+     * @throws IllegalArgumentException if number of columns <= 0
      */
     public Table(int columns) {
         if (columns <= 0) {
@@ -30,10 +28,8 @@ public class Table implements Command {
     }
 
     /**
-     * @param cells
-     *        an input for each cell
-     * @throws IllegalArgumentException
-     *         if number of cells != number of columns
+     * @param cells an input for each cell
+     * @throws IllegalArgumentException if number of cells != number of columns
      */
     public void addRow(List<String> cells) {
         int rowSize = cells.size();
