@@ -6,6 +6,7 @@ import lombok.Data;
 
 @Data
 public class IssueJournalWrapper {
+
     Integer issueId;
     String issueSubject;
     Journal journal;

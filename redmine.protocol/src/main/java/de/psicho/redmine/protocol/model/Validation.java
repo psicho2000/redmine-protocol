@@ -6,6 +6,7 @@ import java.util.List;
 import lombok.Getter;
 
 public class Validation {
+
     @Getter
     List<String> messages = new ArrayList<String>();
 

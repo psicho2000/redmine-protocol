@@ -11,10 +11,10 @@ import lombok.Getter;
 @Getter
 @Component
 public class RedmineHandler {
+
     RedmineManager redmineManager;
 
     public RedmineHandler(AppConfig appConfig) {
-        redmineManager = RedmineManagerFactory.createWithApiKey(appConfig.getRedmineApiUrl(),
-                appConfig.getRedmineApiAccesskey());
+        redmineManager = RedmineManagerFactory.createWithApiKey(appConfig.getRedmineApiUrl(), appConfig.getRedmineApiAccesskey());
     }
 }

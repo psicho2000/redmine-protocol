@@ -15,6 +15,7 @@ import de.psicho.redmine.protocol.model.IssueJournalWrapper;
 
 @Component
 public class JournalHandler {
+
     @Autowired
     public IssueHandler issueHandler;
 

@@ -12,6 +12,7 @@ import com.taskadapter.redmineapi.bean.IssueStatus;
 
 @Component
 public class IssueHandler {
+
     IssueManager issueManager = null;
     List<IssueStatus> statuses = null;
 
