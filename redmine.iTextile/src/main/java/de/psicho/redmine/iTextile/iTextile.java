@@ -28,8 +28,7 @@ public class iTextile {
     }
 
     /**
-     * <p>
-     * Prints text as new paragraph
+     * <p> Prints text as new paragraph
      * 
      * @param text the text to print
      * @param size size of the text
