@@ -67,8 +67,7 @@ public class ProtocolController {
 
         startITextile(PROTOCOL_FILENAME);
         writeDocumentHeader();
-        // FIXME fix bug with IndexOutOfBounds
-        // startTable();
+        startTable();
 
         List<IssueJournalWrapper> statusJournals = statusDao.findJournals(isoDate);
         // FIXME fix bug with IndexOutOfBounds
@@ -77,8 +76,7 @@ public class ProtocolController {
         List<IssueJournalWrapper> topJournals = topDao.findJournals(isoDate);
         processTop(topJournals);
 
-        // FIXME fix bug with IndexOutOfBounds
-        // endTable();
+        endTable();
         finalizeITextile();
 
         // FIXME temporarily don't close the protocol

@@ -35,7 +35,8 @@ public class Table implements Command {
                 String.format("Number of columns must be greater 0. But %d was provided.", columns));
         }
         this.columns = columns;
-        columnFormatting = new ArrayList<>(columns);
+        columnFormatting = new ArrayList<>();
+        IntStream.range(0, columns).forEach(i -> columnFormatting.add(null));
         rows = new LinkedList<>();
         headerSet = false;
     }
@@ -60,8 +61,8 @@ public class Table implements Command {
                 String.format("Table has %d columns, but %d cells have been provided.", columns, rowSize));
         }
 
-        List<Cell> cells = IntStream.range(0, cellsContent.size())
-            .mapToObj(i -> new Cell(cellsContent.get(i), columnFormatting.get(i))).collect(Collectors.toList());
+        List<Cell> cells = IntStream.range(0, rowSize).mapToObj(i -> new Cell(cellsContent.get(i), columnFormatting.get(i)))
+            .collect(Collectors.toList());
 
         Row row = new Row(cells);
         row.setBackgroundColor(backgroundColor);
