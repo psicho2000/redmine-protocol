@@ -3,27 +3,33 @@ package de.psicho.redmine.iTextile.command;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
 
 /**
  * @author Markus
  */
 public class Table implements Command {
 
+    private static final float A4_WIDTH = 523f;
     private int columns;
     private LinkedList<Row> rows;
     private List<TextProperty> columnFormatting;
+    private List<Float> columnWidths;
     private boolean headerSet;
-
-    @Override
-    public void process(Document document) {
-        // TODO Auto-generated method stub
-    }
 
     /**
      * @param columns number of columns the table will be created with
@@ -37,8 +43,62 @@ public class Table implements Command {
         this.columns = columns;
         columnFormatting = new ArrayList<>();
         IntStream.range(0, columns).forEach(i -> columnFormatting.add(null));
+        columnWidths = new ArrayList<>();
+        IntStream.range(0, columns).forEach(i -> columnWidths.add(null));
         rows = new LinkedList<>();
         headerSet = false;
+    }
+
+    @Override
+    public void process(Document document) {
+        PdfPTable table = new PdfPTable(columns);
+        setWidths(table);
+        rows.forEach(row -> processRow(table, row));
+        try {
+            document.add(table);
+        } catch (DocumentException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    // http://developers.itextpdf.com/de/node/2399
+    private void setWidths(PdfPTable table) {
+        float difference =
+            columnWidths.stream().map(width -> Optional.ofNullable(width).orElse(0f)).reduce(A4_WIDTH, (a, b) -> a - b);
+        int numberOfSetWidths = columnWidths.stream().mapToInt(width -> width == null ? 0 : 1).sum();
+        float spread = difference / (columns - numberOfSetWidths);
+
+        float[] relativeWidths = ArrayUtils.toPrimitive(columnWidths.toArray(new Float[0]), spread);
+        try {
+            table.setTotalWidth(relativeWidths);
+            table.setLockedWidth(true);
+        } catch (DocumentException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void processRow(PdfPTable table, Row row) {
+        row.getCells().forEach(cell -> processCell(table, cell, row.getBackgroundColor()));
+    }
+
+    private void processCell(PdfPTable table, Cell cell, BaseColor backgroundColor) {
+        TextProperty formatting = cell.getFormatting();
+        Chunk chunk;
+        if (formatting != null) {
+            Font font = new Font(formatting.getFont(), formatting.getSize(), formatting.getStyle(), formatting.getColor());
+            chunk = new Chunk(cell.getContent(), font);
+        } else {
+            chunk = new Chunk(cell.getContent());
+        }
+        Phrase phrase = new Phrase(chunk);
+        PdfPCell pdfCell = new PdfPCell(phrase);
+        if (backgroundColor != null) {
+            pdfCell.setBackgroundColor(backgroundColor);
+        }
+        if (formatting != null) {
+            pdfCell.setHorizontalAlignment(formatting.getAlignment());
+        }
+        table.addCell(pdfCell);
     }
 
     /**
@@ -72,7 +132,7 @@ public class Table implements Command {
     /**
      * <p>Sets column formatting for the given column. A header will not be formatted.
      * 
-     * @param colNum zero based number of the columns cells
+     * @param colNum zero based number of the column
      * @param formatting formatting for the columns cells
      * @throws IndexOutOfBoundsException if colNum < 0 or colNum >= number of columns
      */
@@ -86,6 +146,21 @@ public class Table implements Command {
             rowsStream = rowsStream.skip(1);
         }
         rowsStream.forEach(r -> r.getCells().get(colNum).setFormatting(formatting));
+    }
+
+    /**
+     * <p>Sets column width for the given column.
+     * 
+     * @param colNum zero based number of the column
+     * @param width width for the column
+     * @throws IndexOutOfBoundsException if colNum < 0 or colNum >= number of columns
+     */
+    public void setColumnWidth(int colNum, float width) {
+        if (colNum < 0 || colNum >= columns) {
+            throw new IndexOutOfBoundsException(String.format("Given column num %d must be >= 0 and < %d", colNum, columns));
+        }
+
+        columnWidths.set(colNum, width);
     }
 
     /**

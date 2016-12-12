@@ -15,10 +15,12 @@ import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.taskadapter.redmineapi.bean.CustomField;
 import com.taskadapter.redmineapi.bean.Issue;
+import com.taskadapter.redmineapi.bean.User;
 
 import de.psicho.redmine.iTextile.iTextile;
 import de.psicho.redmine.iTextile.command.TextProperty;
 import de.psicho.redmine.protocol.api.IssueHandler;
+import de.psicho.redmine.protocol.api.UserHandler;
 import de.psicho.redmine.protocol.config.AppConfig;
 import de.psicho.redmine.protocol.dao.StatusDao;
 import de.psicho.redmine.protocol.dao.TopDao;
@@ -33,6 +35,9 @@ public class ProtocolController {
 
     @Autowired
     IssueHandler issueHandler;
+
+    @Autowired
+    UserHandler userHandler;
 
     @Autowired
     StatusDao statusDao;
@@ -70,8 +75,7 @@ public class ProtocolController {
         startTable();
 
         List<IssueJournalWrapper> statusJournals = statusDao.findJournals(isoDate);
-        // FIXME fix bug with IndexOutOfBounds
-        // processStatus(statusJournals);
+        processStatus(statusJournals);
 
         List<IssueJournalWrapper> topJournals = topDao.findJournals(isoDate);
         processTop(topJournals);
@@ -87,13 +91,15 @@ public class ProtocolController {
 
     private void startTable() {
         iTextile.startTable(3);
+        iTextile.setTableColumnWidth(0, 30f);
+        iTextile.setTableColumnWidth(2, 70f);
 
         TextProperty format = TextProperty.builder().style(Font.BOLD).build();
         iTextile.setTableHeader(format, BaseColor.GRAY, "Nr.", "TOP / Beschluss", "Verantw.");
 
-        String moderation = getProtocolValue(appConfig.getRedmineProtocolModeration());
-        String devotion = getProtocolValue(appConfig.getRedmineProtocolDevotion());
-        iTextile.addTableRow("---", "Moderation / Andacht", moderation + "/" + devotion);
+        String moderation = getProtocolUser(appConfig.getRedmineProtocolModeration());
+        String devotion = getProtocolUser(appConfig.getRedmineProtocolDevotion());
+        iTextile.addTableRow("---", "Moderation / Andacht", moderation + "/ " + devotion);
     }
 
     private void endTable() {
@@ -158,14 +164,16 @@ public class ProtocolController {
     }
 
     private void processStatus(List<IssueJournalWrapper> statusJournals) {
-        String statusContent = statusJournals.stream().map(this::appendJournal).collect(Collectors.joining("\r\n"));
-        iTextile.addTableRow("---", statusContent, getProtocolValue(appConfig.getRedmineProtocolModeration()));
+        String statusContent = "*Status vom letzten Protokoll*\r\n"
+            + statusJournals.stream().map(this::appendJournal).collect(Collectors.joining("\r\n"));
+        iTextile.addTableRow("---", statusContent, getProtocolUser(appConfig.getRedmineProtocolModeration()));
     }
 
     private String appendJournal(IssueJournalWrapper status) {
         StringBuilder statusContent = new StringBuilder();
+        statusContent.append("#");
         statusContent.append(status.getIssueId());
-        statusContent.append("(");
+        statusContent.append(" (");
         statusContent.append(status.getIssueSubject());
         statusContent.append(")");
         statusContent.append("\r\n");
@@ -197,4 +205,10 @@ public class ProtocolController {
         return field.getValue();
     }
 
+    private String getProtocolUser(String fieldName) {
+        CustomField field = protocol.getCustomFieldByName(fieldName);
+        User user = userHandler.getUserById(field.getValue());
+        return new StringBuilder().append(user.getFirstName()).append(" ").append(user.getLastName().substring(0, 1)).append(".")
+            .toString();
+    }
 }

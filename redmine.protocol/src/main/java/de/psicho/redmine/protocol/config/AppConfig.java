@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 
 import de.psicho.redmine.protocol.api.IssueHandler;
 import de.psicho.redmine.protocol.api.RedmineHandler;
+import de.psicho.redmine.protocol.api.UserHandler;
 import lombok.Getter;
 
 @Configuration
@@ -54,5 +55,10 @@ public class AppConfig {
     @Bean
     public IssueHandler issueHandler() {
         return new IssueHandler(redmineHandler());
+    }
+
+    @Bean
+    public UserHandler userHandler() {
+        return new UserHandler(redmineHandler());
     }
 }

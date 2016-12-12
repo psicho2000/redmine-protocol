@@ -76,6 +76,23 @@ public class iTextile {
     }
 
     /**
+     * <p>Sets the width in pixels (based on 72 dpi) for the given column. If width is not defined for a column, remaining width
+     * (based on iText default width of 523 pixels) will be evenly distributed among the non defined columns.
+     * 
+     * @param colNum zero based number of the column
+     * @param width width for the column
+     * @throws IllegalStateException if not in table mode
+     * @throws IndexOutOfBoundsException if colNum < 0 or colNum >= number of columns
+     */
+    public void setTableColumnWidth(int colNum, float width) {
+        if (!isTableMode()) {
+            throw new IllegalStateException("Not in table mode, cannot add row.");
+        }
+
+        table.setColumnWidth(colNum, width);
+    }
+
+    /**
      * @param cells an input for each cell
      * @throws IllegalStateException if not in table mode
      * @throws IllegalArgumentException if number of cells != number of columns
