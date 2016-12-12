@@ -63,10 +63,14 @@ public class Table implements Command {
 
     // http://developers.itextpdf.com/de/node/2399
     private void setWidths(PdfPTable table) {
-        float difference =
-            columnWidths.stream().map(width -> Optional.ofNullable(width).orElse(0f)).reduce(A4_WIDTH, (a, b) -> a - b);
+        float spread = 0f;
+
         int numberOfSetWidths = columnWidths.stream().mapToInt(width -> width == null ? 0 : 1).sum();
-        float spread = difference / (columns - numberOfSetWidths);
+        if (columns != numberOfSetWidths) {
+            float freeSpace =
+                columnWidths.stream().map(width -> Optional.ofNullable(width).orElse(0f)).reduce(A4_WIDTH, (a, b) -> a - b);
+            spread = freeSpace / (columns - numberOfSetWidths);
+        }
 
         float[] relativeWidths = ArrayUtils.toPrimitive(columnWidths.toArray(new Float[0]), spread);
         try {
