@@ -153,7 +153,8 @@ public class Table implements Command {
     }
 
     /**
-     * <p>Sets column width for the given column.
+     * <p>Sets the width in pixels (based on 72 dpi) for the given column. If width is not defined for a column, remaining width
+     * (based on iText default width of 523 pixels) will be evenly distributed among the non defined columns.
      * 
      * @param colNum zero based number of the column
      * @param width width for the column
