@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
+import com.itextpdf.text.Rectangle;
 import com.taskadapter.redmineapi.bean.CustomField;
 import com.taskadapter.redmineapi.bean.Issue;
 import com.taskadapter.redmineapi.bean.User;
@@ -134,14 +135,13 @@ public class ProtocolController {
     private void writeDocumentHeader() {
         heading();
 
-        StringBuilder title = new StringBuilder();
-        title.append("Gemeinderat am ");
-        title.append(DateUtils.dateToGer(protocolStartDate));
-        title.append(" bei ");
-        title.append(getProtocolValue(appConfig.getRedmineProtocolLocation()));
-        title.append("             "); // FIXME
-        title.append(getProtocolValue(appConfig.getRedmineProtocolNumber()));
-        paragraph(title.toString());
+        String title = new StringBuilder().append("Gemeinderat am ").append(DateUtils.dateToGer(protocolStartDate))
+            .append(" bei ").append(getProtocolValue(appConfig.getRedmineProtocolLocation())).toString();
+        iTextile.startTable(2, Rectangle.NO_BORDER);
+        iTextile.setTableColumnFormat(0, TextProperty.builder().alignment(Element.ALIGN_LEFT).build());
+        iTextile.setTableColumnFormat(1, TextProperty.builder().alignment(Element.ALIGN_RIGHT).build());
+        iTextile.addTableRow(title, getProtocolValue(appConfig.getRedmineProtocolNumber()));
+        iTextile.endTable();
 
         StringBuilder meal = new StringBuilder();
         meal.append("Essen: ");

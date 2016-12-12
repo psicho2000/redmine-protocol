@@ -9,6 +9,7 @@ import java.util.List;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import de.psicho.redmine.iTextile.command.Command;
@@ -57,6 +58,20 @@ public class iTextile {
         }
 
         table = new Table(columns);
+    }
+
+    /**
+     * @param columns number of columns the table will be created with
+     * @param border Flag of type {@link Rectangle} indicating border style
+     * @throws IllegalStateException if already in table mode
+     * @throws IllegalArgumentException if number of columns <= 0
+     */
+    public void startTable(int columns, int border) {
+        if (isTableMode()) {
+            throw new IllegalStateException("Already in table mode, cannot start again.");
+        }
+
+        table = new Table(columns, border);
     }
 
     /**

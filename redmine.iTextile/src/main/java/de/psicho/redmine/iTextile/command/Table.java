@@ -16,6 +16,7 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 
@@ -30,17 +31,30 @@ public class Table implements Command {
     private List<TextProperty> columnFormatting;
     private List<Float> columnWidths;
     private boolean headerSet;
+    private int border;
 
     /**
+     * <p>Creates a table with a visible border.
+     * 
      * @param columns number of columns the table will be created with
      * @throws IllegalArgumentException if number of columns <= 0
      */
     public Table(int columns) {
+        this(columns, Rectangle.BOX);
+    }
+
+    /**
+     * @param columns number of columns the table will be created with
+     * @param border Flag of type {@link Rectangle} indicating border style
+     * @throws IllegalArgumentException if number of columns <= 0
+     */
+    public Table(int columns, int border) {
         if (columns <= 0) {
             throw new IllegalArgumentException(
                 String.format("Number of columns must be greater 0. But %d was provided.", columns));
         }
         this.columns = columns;
+        this.border = border;
         columnFormatting = new ArrayList<>();
         IntStream.range(0, columns).forEach(i -> columnFormatting.add(null));
         columnWidths = new ArrayList<>();
@@ -102,6 +116,7 @@ public class Table implements Command {
         if (formatting != null) {
             pdfCell.setHorizontalAlignment(formatting.getAlignment());
         }
+        pdfCell.setBorder(border);
         table.addCell(pdfCell);
     }
 
@@ -134,7 +149,8 @@ public class Table implements Command {
     }
 
     /**
-     * <p>Sets column formatting for the given column. A header will not be formatted.
+     * <p>Sets column formatting for the given column. A header will not be formatted. If rows were already added, format will be
+     * applied to those rows aswell.
      * 
      * @param colNum zero based number of the column
      * @param formatting formatting for the columns cells
@@ -144,6 +160,8 @@ public class Table implements Command {
         if (colNum < 0 || colNum >= columns) {
             throw new IndexOutOfBoundsException(String.format("Given column num %d must be >= 0 and < %d", colNum, columns));
         }
+
+        columnFormatting.set(colNum, formatting);
 
         Stream<Row> rowsStream = rows.stream();
         if (headerSet) {
