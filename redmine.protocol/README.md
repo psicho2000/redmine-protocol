@@ -2,6 +2,14 @@
 - spring boot application mit externer DB und spring JDBCTemplate
 - Eingabe der Issue-ID per Rest-Param (Alternativ: Web-GUI)
     http://lifeline-herne.de:8090/protocol/{issueId}
+- Projekt iTextile
+    * Nutzt iText
+    * Verwendet Engine von textile-j (https://svn.java.net/svn/textile-j~svn/), basierend auf regulären Ausdrücken
+    * konvertiert zusätzlich #123 in einen Link
+- Rendering
+    * Renderer für Wiki-Syntax
+    * Zeilenumbrüche / Paragraphen
+    * Tabellen
 
 # Quellen
 ## API für Redmine
