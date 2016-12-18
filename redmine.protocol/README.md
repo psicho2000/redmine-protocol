@@ -17,6 +17,9 @@
 - http://www.redmine.org/projects/redmine/wiki/Rest_api
 - https://github.com/taskadapter/redmine-java-api/blob/master/README.md
 
+## Textile
+https://txstyle.org/article/34/textile-resources
+
 # Gegenüberstellung PDF Frameworks 
 - PDFBox (GPL)
     * https://github.com/dhorions/boxable
