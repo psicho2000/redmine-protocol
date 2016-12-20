@@ -15,10 +15,9 @@ public class UserHandler {
         userManager = redmineHandler.getRedmineManager().getUserManager();
     }
 
-    public User getUserById(String userId) {
-        Integer id = Integer.valueOf(userId);
+    public User getUserById(Integer userId) {
         try {
-            return userManager.getUserById(id);
+            return userManager.getUserById(userId);
         } catch (RedmineException ex) {
             ex.printStackTrace();
             return null;

@@ -96,7 +96,7 @@ public class ProtocolController {
 
     private void startTable() {
         iTextile.startTable(3);
-        iTextile.setTableColumnWidth(0, 30f);
+        iTextile.setTableColumnWidth(0, 35f);
         iTextile.setTableColumnWidth(2, 70f);
         iTextile.setTableColumnParser(0, new TextileDialect());
         iTextile.setTableColumnParser(1, new TextileDialect());
@@ -195,7 +195,21 @@ public class ProtocolController {
 
     private void processTop(List<IssueJournalWrapper> topJournals) {
         for (IssueJournalWrapper top : topJournals) {
-            // FIXME
+            String number = setIssueLinks("#" + top.getIssueId().toString());
+            String content;
+            String title = "*" + top.getIssueSubject() + "*\r\n";
+            if (top.getJournal() != null) {
+                content = setIssueLinks(top.getJournal().getNotes());
+            } else {
+                Issue issue = issueHandler.getIssue(top.getIssueId());
+                content = issue.getDescription();
+            }
+            Integer assignee = top.getAssignee();
+            if (assignee == null || assignee == 0) {
+                throw new RuntimeException(String.format("Das Ticket #%d wurde niemandem zugewiesen!", top.getIssueId()));
+            }
+            String responsible = getProtocolUser(assignee);
+            iTextile.addTableRow(number, title + content, responsible);
         }
     }
 
@@ -219,7 +233,15 @@ public class ProtocolController {
 
     private String getProtocolUser(String fieldName) {
         CustomField field = protocol.getCustomFieldByName(fieldName);
-        User user = userHandler.getUserById(field.getValue());
+        Integer userId = Integer.valueOf(field.getValue());
+        return getProtocolUser(userId);
+    }
+
+    private String getProtocolUser(Integer userId) {
+        User user = userHandler.getUserById(userId);
+        if (user == null) {
+            throw new RuntimeException(String.format("Der User mit der Id %d konnte nicht gefunden werden.", userId));
+        }
         return new StringBuilder().append(user.getFirstName()).append(" ").append(user.getLastName().substring(0, 1)).append(".")
             .toString();
     }

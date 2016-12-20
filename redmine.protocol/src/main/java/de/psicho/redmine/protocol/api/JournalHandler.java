@@ -25,11 +25,13 @@ public class JournalHandler {
         try {
             Integer issueId = rs.getInt(1);
             String subject = rs.getString(2);
-            Integer journalId = rs.getInt(3);
+            Integer assignee = rs.getInt(3);
+            Integer journalId = rs.getInt(4);
             Journal journal = journalId == 0 ? null : getJournal(issueId, journalId);
             result.setIssueId(issueId);
             result.setIssueSubject(subject);
             result.setJournal(journal);
+            result.setAssignee(assignee);
         } catch (SQLException ex) {
             ex.printStackTrace();
         }

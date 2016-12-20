@@ -10,4 +10,5 @@ public class IssueJournalWrapper {
     Integer issueId;
     String issueSubject;
     Journal journal;
+    Integer assignee;
 }

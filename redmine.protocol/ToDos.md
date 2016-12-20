@@ -1,7 +1,4 @@
 Nächste Schritte:
-    3. Pre- oder Postprocessor für #123
-        * http://redmine.lifeline-herne.de/issues/ wird als Param übergeben
-    4. processTop
     5. Abstände vor und nach Tabellen, Farbe von "P R O T O K O L L", etc.
     6. Protokoll-Nummer automatisch zählen
     7. PDF an Ticket anhängen
