@@ -1,5 +1,6 @@
 package de.psicho.redmine.iTextile.command;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,11 +15,17 @@ import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.Phrase;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.tool.xml.ElementList;
+import com.itextpdf.tool.xml.XMLWorkerHelper;
+
+import net.java.textilej.parser.MarkupParser;
+import net.java.textilej.parser.markup.Dialect;
 
 /**
  * @author Markus
@@ -29,6 +36,7 @@ public class Table implements Command {
     private int columns;
     private LinkedList<Row> rows;
     private List<TextProperty> columnFormatting;
+    private List<Dialect> columnDialect;
     private List<Float> columnWidths;
     private boolean headerSet;
     private int border;
@@ -57,6 +65,8 @@ public class Table implements Command {
         this.border = border;
         columnFormatting = new ArrayList<>();
         IntStream.range(0, columns).forEach(i -> columnFormatting.add(null));
+        columnDialect = new ArrayList<>();
+        IntStream.range(0, columns).forEach(i -> columnDialect.add(null));
         columnWidths = new ArrayList<>();
         IntStream.range(0, columns).forEach(i -> columnWidths.add(null));
         rows = new LinkedList<>();
@@ -100,8 +110,24 @@ public class Table implements Command {
     }
 
     private void processCell(PdfPTable table, Cell cell, BaseColor backgroundColor) {
-        TextProperty formatting = cell.getFormatting();
+        PdfPCell pdfCell;
+
+        Dialect dialect = cell.getDialect();
+        if (dialect != null) {
+            pdfCell = processCellWithDialect(cell, dialect);
+        } else {
+            pdfCell = processCellWithFormat(cell, backgroundColor);
+
+        }
+
+        pdfCell.setBorder(border);
+        table.addCell(pdfCell);
+    }
+
+    private PdfPCell processCellWithFormat(Cell cell, BaseColor backgroundColor) {
+        PdfPCell pdfCell;
         Chunk chunk;
+        TextProperty formatting = cell.getFormatting();
         if (formatting != null) {
             Font font = new Font(formatting.getFont(), formatting.getSize(), formatting.getStyle(), formatting.getColor());
             chunk = new Chunk(cell.getContent(), font);
@@ -109,15 +135,30 @@ public class Table implements Command {
             chunk = new Chunk(cell.getContent());
         }
         Phrase phrase = new Phrase(chunk);
-        PdfPCell pdfCell = new PdfPCell(phrase);
+        pdfCell = new PdfPCell(phrase);
         if (backgroundColor != null) {
             pdfCell.setBackgroundColor(backgroundColor);
         }
         if (formatting != null) {
             pdfCell.setHorizontalAlignment(formatting.getAlignment());
         }
-        pdfCell.setBorder(border);
-        table.addCell(pdfCell);
+        return pdfCell;
+    }
+
+    private PdfPCell processCellWithDialect(Cell cell, Dialect dialect) {
+        PdfPCell pdfCell;
+        pdfCell = new PdfPCell();
+        String htmlContent = new MarkupParser(dialect).parseToHtml(cell.getContent());
+        ElementList list;
+        try {
+            list = XMLWorkerHelper.parseToElementList(htmlContent, null);
+            for (Element element : list) {
+                pdfCell.addElement(element);
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return pdfCell;
     }
 
     /**
@@ -140,7 +181,8 @@ public class Table implements Command {
                 String.format("Table has %d columns, but %d cells have been provided.", columns, rowSize));
         }
 
-        List<Cell> cells = IntStream.range(0, rowSize).mapToObj(i -> new Cell(cellsContent.get(i), columnFormatting.get(i)))
+        List<Cell> cells = IntStream.range(0, rowSize)
+            .mapToObj(i -> new Cell(cellsContent.get(i), columnFormatting.get(i), columnDialect.get(i)))
             .collect(Collectors.toList());
 
         Row row = new Row(cells);
@@ -150,7 +192,7 @@ public class Table implements Command {
 
     /**
      * <p>Sets column formatting for the given column. A header will not be formatted. If rows were already added, format will be
-     * applied to those rows aswell.
+     * applied to those rows aswell. If a dialect has already been set for that column, it will be removed.
      * 
      * @param colNum zero based number of the column
      * @param formatting formatting for the columns cells
@@ -162,12 +204,44 @@ public class Table implements Command {
         }
 
         columnFormatting.set(colNum, formatting);
+        columnDialect.set(colNum, null);
 
         Stream<Row> rowsStream = rows.stream();
         if (headerSet) {
             rowsStream = rowsStream.skip(1);
         }
-        rowsStream.forEach(r -> r.getCells().get(colNum).setFormatting(formatting));
+        rowsStream.forEach(row -> {
+            Cell cell = row.getCells().get(colNum);
+            cell.setFormatting(formatting);
+            cell.setDialect(null);
+        });
+    }
+
+    /**
+     * <p>Sets column parser dialect for the given column. A header will not be parsed. If rows were already added, dialect will
+     * be applied to those rows aswell. If a format has already been set for that column, it will be removed.
+     * 
+     * @param colNum zero based number of the column
+     * @param dialect parser for the columns cells
+     * @throws IndexOutOfBoundsException if colNum < 0 or colNum >= number of columns
+     */
+    public void setColumnDialect(int colNum, Dialect dialect) {
+        if (colNum < 0 || colNum >= columns) {
+            throw new IndexOutOfBoundsException(String.format("Given column num %d must be >= 0 and < %d", colNum, columns));
+        }
+
+        columnDialect.set(colNum, dialect);
+        columnFormatting.set(colNum, null);
+
+        Stream<Row> rowsStream = rows.stream();
+        if (headerSet) {
+            rowsStream = rowsStream.skip(1);
+        }
+        rowsStream.forEach(row -> {
+            Cell cell = row.getCells().get(colNum);
+            cell.setDialect(dialect);
+            cell.setFormatting(null);
+        });
     }
 
     /**
@@ -202,7 +276,7 @@ public class Table implements Command {
         }
 
         List<Cell> cells =
-            headerContents.stream().map(cellContent -> new Cell(cellContent, formatting)).collect(Collectors.toList());
+            headerContents.stream().map(cellContent -> new Cell(cellContent, formatting, null)).collect(Collectors.toList());
 
         if (headerSet) {
             Row header = rows.get(0);

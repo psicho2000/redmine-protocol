@@ -16,6 +16,7 @@ import de.psicho.redmine.iTextile.command.Command;
 import de.psicho.redmine.iTextile.command.Paragraph;
 import de.psicho.redmine.iTextile.command.Table;
 import de.psicho.redmine.iTextile.command.TextProperty;
+import net.java.textilej.parser.markup.Dialect;
 
 public class iTextile {
 
@@ -88,6 +89,22 @@ public class iTextile {
         }
 
         table.setColumnFormat(colNum, formatting);
+    }
+
+    /**
+     * <p>Sets the parser dialect for the given column
+     * 
+     * @param colNum zero based number of the column
+     * @param dialect dialect for the column
+     * @throws IllegalStateException if not in table mode
+     * @throws IndexOutOfBoundsException if colNum < 0 or colNum >= number of columns
+     */
+    public void setTableColumnParser(int colNum, Dialect dialect) {
+        if (!isTableMode()) {
+            throw new IllegalStateException("Not in table mode, cannot add row.");
+        }
+
+        table.setColumnDialect(colNum, dialect);
     }
 
     /**

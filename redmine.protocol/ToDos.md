@@ -1,13 +1,4 @@
 Nächste Schritte:
-    1. POC für
-        String htmlContent = new MarkupParser().parseToHtml(markupContent);
-        ElementList list = XMLWorkerHelper.parseToElementList(htmlContent, null);
-        for (Element element : list) {
-            cell.addElement(element);
-        }
-    2. Obiges Konstrukt einbinden
-        * neues Package
-        * Steuerung, welche Zelle od. Spalte geparst wird
     3. Pre- oder Postprocessor für #123
         * http://redmine.lifeline-herne.de/issues/ wird als Param übergeben
     4. processTop

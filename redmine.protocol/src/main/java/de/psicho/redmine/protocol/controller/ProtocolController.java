@@ -3,6 +3,8 @@ package de.psicho.redmine.protocol.controller;
 import java.io.File;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +29,12 @@ import de.psicho.redmine.protocol.dao.StatusDao;
 import de.psicho.redmine.protocol.dao.TopDao;
 import de.psicho.redmine.protocol.model.IssueJournalWrapper;
 import de.psicho.redmine.protocol.utils.DateUtils;
+import net.java.textilej.parser.markup.textile.TextileDialect;
 
 @RestController
 public class ProtocolController {
 
+    private static final String PREFIX = "http://redmine.lifeline-herne.de/issues/";
     private final static String PROTOCOL_FILENAME = "results/Protokoll.pdf";
     private final static String AGENDA_FILENAME = "results/Agenda.pdf";
 
@@ -94,6 +98,8 @@ public class ProtocolController {
         iTextile.startTable(3);
         iTextile.setTableColumnWidth(0, 30f);
         iTextile.setTableColumnWidth(2, 70f);
+        iTextile.setTableColumnParser(0, new TextileDialect());
+        iTextile.setTableColumnParser(1, new TextileDialect());
 
         TextProperty format = TextProperty.builder().style(Font.BOLD).build();
         iTextile.setTableHeader(format, BaseColor.GRAY, "Nr.", "TOP / Beschluss", "Verantw.");
@@ -166,7 +172,13 @@ public class ProtocolController {
     private void processStatus(List<IssueJournalWrapper> statusJournals) {
         String statusContent = "*Status vom letzten Protokoll*\r\n"
             + statusJournals.stream().map(this::appendJournal).collect(Collectors.joining("\r\n"));
+        statusContent = setIssueLinks(statusContent);
         iTextile.addTableRow("---", statusContent, getProtocolUser(appConfig.getRedmineProtocolModeration()));
+    }
+
+    private String setIssueLinks(String statusContent) {
+        Matcher matcher = Pattern.compile("#(\\d*)").matcher(statusContent);
+        return matcher.replaceAll("\"#$1\":" + PREFIX + "$1");
     }
 
     private String appendJournal(IssueJournalWrapper status) {
