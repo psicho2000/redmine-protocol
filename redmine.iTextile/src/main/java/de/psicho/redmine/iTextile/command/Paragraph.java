@@ -19,6 +19,7 @@ public class Paragraph implements Command {
         Chunk chunk = new Chunk(text, font);
         com.itextpdf.text.Paragraph paragraph = new com.itextpdf.text.Paragraph(chunk);
         paragraph.setAlignment(property.getAlignment());
+        paragraph.setSpacingAfter(8.0f);
         try {
             document.add(paragraph);
         } catch (DocumentException ex) {

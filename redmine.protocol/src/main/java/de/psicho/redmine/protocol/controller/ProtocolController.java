@@ -7,7 +7,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,6 +24,7 @@ import com.taskadapter.redmineapi.bean.User;
 
 import de.psicho.redmine.iTextile.iTextile;
 import de.psicho.redmine.iTextile.command.TextProperty;
+import de.psicho.redmine.protocol.api.AttachmentHandler;
 import de.psicho.redmine.protocol.api.IssueHandler;
 import de.psicho.redmine.protocol.api.UserHandler;
 import de.psicho.redmine.protocol.config.AppConfig;
@@ -34,9 +37,16 @@ import net.java.textilej.parser.markup.textile.TextileDialect;
 @RestController
 public class ProtocolController {
 
-    private static final String PREFIX = "http://redmine.lifeline-herne.de/issues/";
-    private final static String PROTOCOL_FILENAME = "results/Protokoll.pdf";
+    @Value("${redmine.issues.link}")
+    private String issueLinkPrefix;
+
+    private final static String PROTOCOL_PATH = "results";
+    private final static String PROTOCOL_FILE_PREFIX = "Gemeinderat ";
     private final static String AGENDA_FILENAME = "results/Agenda.pdf";
+    private final static String PDF_SUFFIX = ".pdf";
+
+    @Autowired
+    AttachmentHandler attachmentHandler;
 
     @Autowired
     IssueHandler issueHandler;
@@ -75,7 +85,7 @@ public class ProtocolController {
         protocolStartDate = protocol.getStartDate();
         String isoDate = DateUtils.dateToIso(protocolStartDate);
 
-        startITextile(PROTOCOL_FILENAME);
+        startITextile(getProtocolFileName());
         writeDocumentHeader();
         startTable();
 
@@ -92,6 +102,11 @@ public class ProtocolController {
         // closeProtocol();
 
         return createResponse(issueId, isoDate, statusJournals, topJournals);
+    }
+
+    private String getProtocolFileName() {
+        return new StringBuilder().append(PROTOCOL_PATH).append("/").append(PROTOCOL_FILE_PREFIX)
+            .append(DateUtils.dateToIso(protocolStartDate)).append(PDF_SUFFIX).toString();
     }
 
     private void startTable() {
@@ -165,8 +180,15 @@ public class ProtocolController {
     }
 
     private void heading() {
-        iTextile.addParagraph("P    R    O    T    O    K    O    L    L",
-            TextProperty.builder().size(18.0f).style(Font.BOLD).color(BaseColor.BLUE).alignment(Element.ALIGN_CENTER).build());
+        BaseColor opalBlue = new BaseColor(25, 73, 150);
+        iTextile.addParagraph(insertSpaces("PROTOKOLL", 8),
+            TextProperty.builder().size(18.0f).style(Font.BOLD).color(opalBlue).alignment(Element.ALIGN_CENTER).build());
+    }
+
+    private String insertSpaces(String content, int numberOfSpaces) {
+        String spacing = StringUtils.repeat(" ", numberOfSpaces);
+        String[] stringArray = content.split("");
+        return StringUtils.join(stringArray, spacing);
     }
 
     private void processStatus(List<IssueJournalWrapper> statusJournals) {
@@ -178,7 +200,7 @@ public class ProtocolController {
 
     private String setIssueLinks(String statusContent) {
         Matcher matcher = Pattern.compile("#(\\d*)").matcher(statusContent);
-        return matcher.replaceAll("\"#$1\":" + PREFIX + "$1");
+        return matcher.replaceAll("\"#$1\":" + issueLinkPrefix + "$1");
     }
 
     private String appendJournal(IssueJournalWrapper status) {
@@ -222,6 +244,8 @@ public class ProtocolController {
             subject.append(DateUtils.dateToGer(protocolStartDate));
             protocol.setSubject(subject.toString());
             protocol.setStatusId(issueHandler.getStatusByName(appConfig.getRedmineProtocolClosed()));
+            File attachment = new File(getProtocolFileName());
+            attachmentHandler.addAttachment(protocol.getId(), attachment);
             issueHandler.updateIssue(protocol);
         }
     }

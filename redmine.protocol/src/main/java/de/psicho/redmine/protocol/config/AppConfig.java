@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import de.psicho.redmine.protocol.api.AttachmentHandler;
 import de.psicho.redmine.protocol.api.IssueHandler;
 import de.psicho.redmine.protocol.api.RedmineHandler;
 import de.psicho.redmine.protocol.api.UserHandler;
@@ -60,5 +61,10 @@ public class AppConfig {
     @Bean
     public UserHandler userHandler() {
         return new UserHandler(redmineHandler());
+    }
+
+    @Bean
+    public AttachmentHandler attachmentHandler() {
+        return new AttachmentHandler(redmineHandler());
     }
 }

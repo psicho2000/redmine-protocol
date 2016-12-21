@@ -1,7 +1,13 @@
 server:
   port: 8090
+security:
+  user:
+    name: markus
+    password: Hhw9JU90uQLp5s5WudFE 
 
 redmine:
+  issues:
+    link: http://redmine.lifeline-herne.de/issues/
   protocol:
     name: Protokoll
     mandatory:

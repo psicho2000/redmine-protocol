@@ -53,5 +53,10 @@
     "name": "redmine.protocol.fields.devotion",
     "type": "java.lang.String",
     "description": "Field name for the person responsible for devotion"
+  },
+  {
+    "name": "redmine.issues.link",
+    "type": "java.lang.String",
+    "description": "The link prefix to each specific issue, excluding the issue id"
   }
 ]}
