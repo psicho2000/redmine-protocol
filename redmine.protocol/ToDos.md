@@ -2,8 +2,13 @@ Letzte Schritte:
 
  * Logging (insbes. für Fehler)
  * Test MySQL Connection for Lifeline (running Jar directly on Lifeline)
- * Namen hervorheben? Wenn ja, wie erkennen und wie von anderen, gleichartigen Namen unterscheiden?
  * closeProtocol() entkommentieren und testen
+ 
+ Bugs
+ * Doppelte Listen funktionieren nicht:
+    * Erste Ebene
+    ** Zweite Ebene
+ * markPersons funktioniert nicht richtig
    
 Reorganize ProtocolController
    

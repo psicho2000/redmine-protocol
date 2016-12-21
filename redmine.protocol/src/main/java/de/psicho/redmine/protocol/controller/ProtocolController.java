@@ -202,8 +202,22 @@ public class ProtocolController {
     private void processStatus(List<IssueJournalWrapper> statusJournals) {
         String statusContent = "*Status vom letzten Protokoll*\r\n"
             + statusJournals.stream().map(this::appendJournal).collect(Collectors.joining("\r\n"));
-        statusContent = setIssueLinks(statusContent);
+        statusContent = postProcessContent(statusContent);
         iTextile.addTableRow("---", statusContent, getProtocolUser(redmineProtocol.getFields().getModeration()));
+    }
+
+    private String postProcessContent(String statusContent) {
+        String linked = setIssueLinks(statusContent);
+        return markPersons(linked);
+    }
+
+    private String markPersons(String content) {
+        String replaced = content;
+        for (String member : redmineProtocol.getMembers()) {
+            Matcher matcher = Pattern.compile("(" + member + ")[^a-zA-ZäöüÄÖÜß]").matcher(replaced);
+            replaced = matcher.replaceAll("%{background:yellow}$1%");
+        }
+        return replaced;
     }
 
     private String setIssueLinks(String statusContent) {
@@ -226,14 +240,15 @@ public class ProtocolController {
     private void processTop(List<IssueJournalWrapper> topJournals) {
         for (IssueJournalWrapper top : topJournals) {
             String number = setIssueLinks("#" + top.getIssueId().toString());
-            String content;
             String title = "*" + top.getIssueSubject() + "*\r\n";
+            String content;
             if (top.getJournal() != null) {
-                content = setIssueLinks(top.getJournal().getNotes());
+                content = top.getJournal().getNotes();
             } else {
                 Issue issue = issueHandler.getIssue(top.getIssueId());
                 content = issue.getDescription();
             }
+            content = postProcessContent(content);
             Integer assignee = top.getAssignee();
             if (assignee == null || assignee == 0) {
                 throw new RuntimeException(String.format("Das Ticket #%d wurde niemandem zugewiesen!", top.getIssueId()));
