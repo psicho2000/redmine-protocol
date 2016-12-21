@@ -1,7 +1,6 @@
 package de.psicho.redmine.protocol.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -15,41 +14,8 @@ import lombok.Getter;
 @Getter
 public class AppConfig {
 
-    @Value("${redmine.api.url}")
-    String redmineApiUrl;
-
-    @Value("${redmine.api.accesskey}")
-    String redmineApiAccesskey;
-
-    @Value("${redmine.protocol.name}")
-    String redmineProtocolName;
-
-    @Value("${redmine.protocol.fields.number}")
-    String redmineProtocolNumber;
-
-    @Value("${redmine.protocol.fields.members}")
-    String redmineProtocolMembers;
-
-    @Value("${redmine.protocol.fields.meal}")
-    String redmineProtocolMeal;
-
-    @Value("${redmine.protocol.fields.location}")
-    String redmineProtocolLocation;
-
-    @Value("${redmine.protocol.fields.moderation}")
-    String redmineProtocolModeration;
-
-    @Value("${redmine.protocol.fields.devotion}")
-    String redmineProtocolDevotion;
-
-    @Value("${redmine.protocol.closed}")
-    String redmineProtocolClosed;
-
     @Autowired
-    MandatoryConfigurer mandatoryConfigurer;
-
-    @Autowired
-    MailConfigurer mailConfigurer;
+    private RedmineConfigurer redmine;
 
     @Bean
     public RedmineHandler redmineHandler() {

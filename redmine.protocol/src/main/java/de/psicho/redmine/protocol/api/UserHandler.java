@@ -9,7 +9,7 @@ import com.taskadapter.redmineapi.bean.User;
 @Component
 public class UserHandler {
 
-    UserManager userManager = null;
+    private UserManager userManager = null;
 
     public UserHandler(RedmineHandler redmineHandler) {
         userManager = redmineHandler.getRedmineManager().getUserManager();

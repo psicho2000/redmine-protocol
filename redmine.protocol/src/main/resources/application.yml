@@ -21,10 +21,14 @@ spring:
       mail.smtp.socketFactory.fallback: false
 
 redmine:
+  api:
+    url: http://redmine.lifeline-herne.de/
+    accesskey: 554067cb32616e18b0c977af2eb21a0096dfff40
   issues:
     link: http://redmine.lifeline-herne.de/issues/
   protocol:
     name: Protokoll
+    closed: Erledigt
     mandatory:
       - Nummer
       - Anwesend
@@ -32,14 +36,20 @@ redmine:
       - Ort
       - Moderation
       - Andacht
+    members:
+      - Alberto
+      - Ann
+      - Anne M.
+      - Markus
+      - Stefan E.
+      - Stefan Q.
     fields:
       number: Nummer
-      members: Anwesend
+      participants: Anwesend
       meal: Essen
       location: Ort
       moderation: Moderation
       devotion: Andacht
-    closed: Erledigt
   mail:
     recipient: markus.d.meier@gmail.com
     subject: Protokoll vom Gemeinderat am %s

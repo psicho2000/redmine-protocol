@@ -7,12 +7,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -34,7 +34,8 @@ import de.psicho.redmine.protocol.api.AttachmentHandler;
 import de.psicho.redmine.protocol.api.IssueHandler;
 import de.psicho.redmine.protocol.api.UserHandler;
 import de.psicho.redmine.protocol.config.AppConfig;
-import de.psicho.redmine.protocol.config.MailConfigurer;
+import de.psicho.redmine.protocol.config.Mail;
+import de.psicho.redmine.protocol.config.Protocol;
 import de.psicho.redmine.protocol.dao.StatusDao;
 import de.psicho.redmine.protocol.dao.TopDao;
 import de.psicho.redmine.protocol.model.IssueJournalWrapper;
@@ -47,9 +48,6 @@ public class ProtocolController {
     private final static String PROTOCOL_PATH = "results";
     private final static String PROTOCOL_FILE_PREFIX = "Gemeinderat ";
     private final static String PDF_SUFFIX = ".pdf";
-
-    @Value("${redmine.issues.link}")
-    private String issueLinkPrefix;
 
     @Autowired
     JavaMailSender mailSender;
@@ -72,6 +70,9 @@ public class ProtocolController {
     @Autowired
     AppConfig appConfig;
 
+    private Protocol redmineProtocol;
+    private String issueLinkPrefix;
+
     @Autowired
     Validator validator;
 
@@ -81,6 +82,12 @@ public class ProtocolController {
 
     Date protocolStartDate = null;
     Issue protocol = null;
+
+    @PostConstruct
+    private void init() {
+        redmineProtocol = appConfig.getRedmine().getProtocol();
+        issueLinkPrefix = appConfig.getRedmine().getIssues().getLink();
+    }
 
     @RequestMapping("/protocol/{issueId}")
     public String createProtocol(@PathVariable String issueId) {
@@ -145,8 +152,8 @@ public class ProtocolController {
         TextProperty format = TextProperty.builder().style(Font.BOLD).build();
         iTextile.setTableHeader(format, BaseColor.GRAY, "Nr.", "TOP / Beschluss", "Verantw.");
 
-        String moderation = getProtocolUser(appConfig.getRedmineProtocolModeration());
-        String devotion = getProtocolUser(appConfig.getRedmineProtocolDevotion());
+        String moderation = getProtocolUser(redmineProtocol.getFields().getModeration());
+        String devotion = getProtocolUser(redmineProtocol.getFields().getDevotion());
         iTextile.addTableRow("---", "Moderation / Andacht", moderation + "/ " + devotion);
     }
 
@@ -158,21 +165,21 @@ public class ProtocolController {
         heading();
 
         String title = new StringBuilder().append("Gemeinderat am ").append(DateUtils.dateToGer(protocolStartDate))
-            .append(" bei ").append(getProtocolValue(appConfig.getRedmineProtocolLocation())).toString();
+            .append(" bei ").append(getProtocolValue(redmineProtocol.getFields().getLocation())).toString();
         iTextile.startTable(2, Rectangle.NO_BORDER);
         iTextile.setTableColumnFormat(0, TextProperty.builder().alignment(Element.ALIGN_LEFT).build());
         iTextile.setTableColumnFormat(1, TextProperty.builder().alignment(Element.ALIGN_RIGHT).build());
-        iTextile.addTableRow(title, getProtocolValue(appConfig.getRedmineProtocolNumber()));
+        iTextile.addTableRow(title, getProtocolValue(redmineProtocol.getFields().getNumber()));
         iTextile.endTable();
 
         StringBuilder meal = new StringBuilder();
         meal.append("Essen: ");
-        meal.append(getProtocolValue(appConfig.getRedmineProtocolMeal()));
+        meal.append(getProtocolValue(redmineProtocol.getFields().getMeal()));
         paragraph(meal.toString());
 
         StringBuilder members = new StringBuilder();
         members.append("Anwesend: ");
-        members.append(getProtocolValue(appConfig.getRedmineProtocolMembers()));
+        members.append(getProtocolValue(redmineProtocol.getFields().getParticipants()));
         paragraph(members.toString());
     }
 
@@ -196,7 +203,7 @@ public class ProtocolController {
         String statusContent = "*Status vom letzten Protokoll*\r\n"
             + statusJournals.stream().map(this::appendJournal).collect(Collectors.joining("\r\n"));
         statusContent = setIssueLinks(statusContent);
-        iTextile.addTableRow("---", statusContent, getProtocolUser(appConfig.getRedmineProtocolModeration()));
+        iTextile.addTableRow("---", statusContent, getProtocolUser(redmineProtocol.getFields().getModeration()));
     }
 
     private String setIssueLinks(String statusContent) {
@@ -242,11 +249,11 @@ public class ProtocolController {
         if (protocol != null) {
             StringBuilder subject = new StringBuilder();
             subject.append("Gemeinderat ");
-            subject.append(getProtocolValue(appConfig.getRedmineProtocolNumber()));
+            subject.append(getProtocolValue(redmineProtocol.getFields().getNumber()));
             subject.append(" am ");
             subject.append(DateUtils.dateToGer(protocolStartDate));
             protocol.setSubject(subject.toString());
-            protocol.setStatusId(issueHandler.getStatusByName(appConfig.getRedmineProtocolClosed()));
+            protocol.setStatusId(issueHandler.getStatusByName(redmineProtocol.getClosed()));
             File attachment = new File(getProtocolPath());
             attachmentHandler.addAttachment(protocol.getId(), attachment);
             issueHandler.updateIssue(protocol);
@@ -254,7 +261,7 @@ public class ProtocolController {
     }
 
     private void sendProtocol() {
-        MailConfigurer mailConfig = appConfig.getMailConfigurer();
+        Mail mailConfig = appConfig.getRedmine().getMail();
         MimeMessage message = mailSender.createMimeMessage();
         FileSystemResource file = new FileSystemResource(new File(getProtocolPath()));
 

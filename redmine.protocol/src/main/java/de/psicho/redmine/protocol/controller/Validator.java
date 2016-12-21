@@ -10,16 +10,17 @@ import com.taskadapter.redmineapi.bean.Issue;
 
 import de.psicho.redmine.protocol.api.IssueHandler;
 import de.psicho.redmine.protocol.config.AppConfig;
+import de.psicho.redmine.protocol.config.Protocol;
 import de.psicho.redmine.protocol.model.Validation;
 
 @Component
 public class Validator {
 
     @Autowired
-    AppConfig appConfig;
+    private AppConfig appConfig;
 
     @Autowired
-    IssueHandler issueHandler;
+    private IssueHandler issueHandler;
 
     private Validation validateIssueId(String issueId) {
         Validation validation = new Validation();
@@ -36,14 +37,15 @@ public class Validator {
 
     private Validation validateProtocol(Issue protocol) {
         Validation validation = new Validation();
+        Protocol redmineProtocol = appConfig.getRedmine().getProtocol();
 
-        if (!protocol.getTracker().getName().equals(appConfig.getRedmineProtocolName())) {
+        if (!protocol.getTracker().getName().equals(redmineProtocol.getName())) {
             validation.add(String.format("Das Ticket '%d' ist kein Protokoll (Tracker = '%s').", protocol.getId(),
-                appConfig.getRedmineProtocolName()));
+                redmineProtocol.getName()));
             return validation;
         }
 
-        if (protocol.getStatusName().equals(appConfig.getRedmineProtocolClosed())) {
+        if (protocol.getStatusName().equals(redmineProtocol.getClosed())) {
             validation.add("Das Protokoll wurde bereits geschlossen.");
         }
 
@@ -55,7 +57,7 @@ public class Validator {
             validation.add("'Beginn' muss ein gültiges Datum sein und dem Tag des Meetings entsprechen.");
         }
 
-        List<String> mandatoryFields = appConfig.getMandatoryConfigurer().getMandatory();
+        List<String> mandatoryFields = redmineProtocol.getMandatory();
         for (String field : mandatoryFields) {
             if (protocol.getCustomFieldByName(field) == null
                 || StringUtils.isBlank(protocol.getCustomFieldByName(field).getValue())) {

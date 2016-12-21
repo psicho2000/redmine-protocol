@@ -17,7 +17,7 @@ import de.psicho.redmine.protocol.model.IssueJournalWrapper;
 public class JournalHandler {
 
     @Autowired
-    public IssueHandler issueHandler;
+    private IssueHandler issueHandler;
 
     public IssueJournalWrapper retrieveJournal(ResultSet rs, int rownum) {
         IssueJournalWrapper result = new IssueJournalWrapper();

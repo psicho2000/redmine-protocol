@@ -13,7 +13,7 @@ public class AttachmentHandler {
 
     private static final String CONTENT_TYPE = "application/pdf";
 
-    AttachmentManager attachmentManager = null;
+    private AttachmentManager attachmentManager = null;
 
     public AttachmentHandler(RedmineHandler redmineHandler) {
         attachmentManager = redmineHandler.getRedmineManager().getAttachmentManager();

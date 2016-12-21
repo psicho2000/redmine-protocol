@@ -5,12 +5,13 @@ import org.springframework.context.annotation.Configuration;
 
 import lombok.Data;
 
-@Configuration
-@ConfigurationProperties(prefix = "redmine.mail")
 @Data
-public class MailConfigurer {
+@Configuration
+@ConfigurationProperties(prefix = "redmine")
+public class RedmineConfigurer {
 
-    private String recipient;
-    private String subject;
-    private String body;
+    private Mail mail;
+    private Protocol protocol;
+    private Api api;
+    private Issues issues;
 }

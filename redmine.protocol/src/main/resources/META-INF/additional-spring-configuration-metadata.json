@@ -30,9 +30,9 @@
     "description": "Field name for the protocol number"
   },
   {
-    "name": "redmine.protocol.fields.members",
+    "name": "redmine.protocol.fields.participants",
     "type": "java.lang.String",
-    "description": "Field name for the meeting's attendants"
+    "description": "Field name for the meeting's participants"
   },
   {
     "name": "redmine.protocol.fields.meal",
@@ -73,5 +73,10 @@
     "name": "redmine.mail.body",
     "type": "java.lang.String",
     "description": "Body for sending the protocol mail. Must contain exactly one template parameter: the date of the meeting (denoted as %s). HTML allowed."
+  },
+  {
+    "name": "redmine.protocol.members",
+    "type": "java.util.List",
+    "description": "List of names that shall be marked in protocol (usually the meeting members)."
   }
 ]}

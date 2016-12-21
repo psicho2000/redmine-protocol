@@ -1,7 +1,7 @@
 Letzte Schritte:
 
- * Test MySQL Connection for Lifeline (running Jar directly on Lifeline)
  * Logging (insbes. für Fehler)
+ * Test MySQL Connection for Lifeline (running Jar directly on Lifeline)
  * Namen hervorheben? Wenn ja, wie erkennen und wie von anderen, gleichartigen Namen unterscheiden?
  * closeProtocol() entkommentieren und testen
    
