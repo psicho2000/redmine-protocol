@@ -4,7 +4,12 @@ Letzte Schritte:
    11. Test MySQL Connection for Lifeline (running Jar directly on Lifeline)
    12. Logging (insbes. für Fehler)
    13. Namen hervorheben? Wenn ja, wie erkennen und wie von anderen, gleichartigen Namen unterscheiden?
-   END Reorganize ProtocolController
+   
+   Reorganize ProtocolController
+    a. see notes in ProtocolController
+    b. Remove dependency of TextileDialect: use enum
+    c. Move dependency of itextpdf to separate package
+    d. Move dependency of taskadapter to separate package
 
 Später
     * Protokoll-Nummer automatisch zählen
