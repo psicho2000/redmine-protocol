@@ -7,9 +7,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,6 +34,7 @@ import de.psicho.redmine.protocol.api.AttachmentHandler;
 import de.psicho.redmine.protocol.api.IssueHandler;
 import de.psicho.redmine.protocol.api.UserHandler;
 import de.psicho.redmine.protocol.config.AppConfig;
+import de.psicho.redmine.protocol.config.MailConfigurer;
 import de.psicho.redmine.protocol.dao.StatusDao;
 import de.psicho.redmine.protocol.dao.TopDao;
 import de.psicho.redmine.protocol.model.IssueJournalWrapper;
@@ -37,13 +44,12 @@ import net.java.textilej.parser.markup.textile.TextileDialect;
 @RestController
 public class ProtocolController {
 
-    @Value("${redmine.issues.link}")
-    private String issueLinkPrefix;
-
     private final static String PROTOCOL_PATH = "results";
     private final static String PROTOCOL_FILE_PREFIX = "Gemeinderat ";
-    private final static String AGENDA_FILENAME = "results/Agenda.pdf";
     private final static String PDF_SUFFIX = ".pdf";
+
+    @Value("${redmine.issues.link}")
+    private String issueLinkPrefix;
 
     @Autowired
     AttachmentHandler attachmentHandler;
@@ -66,18 +72,12 @@ public class ProtocolController {
     @Autowired
     Validator validator;
 
+    // TODO autowire as a (stateful --> prototype?) bean; how to inject filename (known at runtime, not compile time)
+    // REMARK: if this is prototype, the whole chain must be!
     iTextile iTextile;
 
     Date protocolStartDate = null;
     Issue protocol = null;
-
-    @RequestMapping("/agenda")
-    public String createAgenda() {
-        startITextile(AGENDA_FILENAME);
-        // TODO create new protocol ticket
-        // TODO create agenda.pdf
-        return null;
-    }
 
     @RequestMapping("/protocol/{issueId}")
     public String createProtocol(@PathVariable String issueId) {
@@ -100,13 +100,36 @@ public class ProtocolController {
 
         // FIXME temporarily don't close the protocol
         // closeProtocol();
+        sendProtocol();
 
         return createResponse(issueId, isoDate, statusJournals, topJournals);
     }
 
-    private String getProtocolFileName() {
-        return new StringBuilder().append(PROTOCOL_PATH).append("/").append(PROTOCOL_FILE_PREFIX)
-            .append(DateUtils.dateToIso(protocolStartDate)).append(PDF_SUFFIX).toString();
+    private String createResponse(String issueId, String isoDate, List<IssueJournalWrapper> statusJournals,
+        List<IssueJournalWrapper> topJournals) {
+
+        StringBuffer result = new StringBuffer();
+        result.append("Creating protocol for id: ");
+        result.append(issueId);
+        result.append("<br>Querying for date ");
+        result.append(isoDate);
+        result.append("<br># StatusItems: ");
+        result.append(statusJournals.size());
+        result.append("<br># TopItems: ");
+        result.append(topJournals.size());
+        return result.toString();
+    }
+
+    // TODO protocol writer - iTextile references only here!
+
+    private void startITextile(String filename) {
+        File file = new File(filename);
+        file.getParentFile().mkdirs();
+        iTextile = new iTextile(filename);
+    }
+
+    private void finalizeITextile() {
+        iTextile.createFile();
     }
 
     private void startTable() {
@@ -126,31 +149,6 @@ public class ProtocolController {
 
     private void endTable() {
         iTextile.endTable();
-    }
-
-    private String createResponse(String issueId, String isoDate, List<IssueJournalWrapper> statusJournals,
-        List<IssueJournalWrapper> topJournals) {
-
-        StringBuffer result = new StringBuffer();
-        result.append("Creating protocol for id: ");
-        result.append(issueId);
-        result.append("<br>Querying for date ");
-        result.append(isoDate);
-        result.append("<br># StatusItems: ");
-        result.append(statusJournals.size());
-        result.append("<br># TopItems: ");
-        result.append(topJournals.size());
-        return result.toString();
-    }
-
-    private void startITextile(String filename) {
-        File file = new File(filename);
-        file.getParentFile().mkdirs();
-        iTextile = new iTextile(filename);
-    }
-
-    private void finalizeITextile() {
-        iTextile.createFile();
     }
 
     private void writeDocumentHeader() {
@@ -235,6 +233,8 @@ public class ProtocolController {
         }
     }
 
+    // TODO protocol finalizer
+
     private void closeProtocol() {
         if (protocol != null) {
             StringBuilder subject = new StringBuilder();
@@ -248,6 +248,36 @@ public class ProtocolController {
             attachmentHandler.addAttachment(protocol.getId(), attachment);
             issueHandler.updateIssue(protocol);
         }
+    }
+
+    private void sendProtocol() {
+        JavaMailSenderImpl sender = new JavaMailSenderImpl();
+        MailConfigurer mailConfig = appConfig.getMailConfigurer();
+        sender.setHost(mailConfig.getHost());
+
+        MimeMessage message = sender.createMimeMessage();
+        FileSystemResource file = new FileSystemResource(new File(getProtocolFileName()));
+
+        MimeMessageHelper helper;
+        try {
+            String dateGer = DateUtils.dateToGer(protocolStartDate);
+            helper = new MimeMessageHelper(message, true);
+            helper.setTo(mailConfig.getRecipient());
+            helper.setSubject(String.format(mailConfig.getSubject(), dateGer));
+            helper.setText(String.format("<html><body>" + mailConfig.getBody() + "</body></html>", dateGer), true);
+            helper.addAttachment(getProtocolFileName(), file);
+        } catch (MessagingException ex) {
+            ex.printStackTrace();
+        }
+
+        sender.send(message);
+    }
+
+    // TODO create a protocol wrapper
+
+    private String getProtocolFileName() {
+        return new StringBuilder().append(PROTOCOL_PATH).append("/").append(PROTOCOL_FILE_PREFIX)
+            .append(DateUtils.dateToIso(protocolStartDate)).append(PDF_SUFFIX).toString();
     }
 
     private String getProtocolValue(String fieldName) {

@@ -25,3 +25,8 @@ redmine:
       moderation: Moderation
       devotion: Andacht
     closed: Erledigt
+  mail:
+    recipient: markus.d.meier@gmail.com
+    host: gmail.com
+    subject: Protokoll vom Gemeinderat am %s
+    body: Hallo lieber Gemeinderat,<br/><br/>hier das Protokoll von unserer Sitzung am %s.<br/><br/>Vielen Dank für eure Mitarbeit!<br/><br/>Liebe Grüße,<br/>Euer Markus

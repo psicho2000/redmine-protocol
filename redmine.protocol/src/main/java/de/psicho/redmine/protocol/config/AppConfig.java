@@ -48,6 +48,9 @@ public class AppConfig {
     @Autowired
     MandatoryConfigurer mandatoryConfigurer;
 
+    @Autowired
+    MailConfigurer mailConfigurer;
+
     @Bean
     public RedmineHandler redmineHandler() {
         return new RedmineHandler(this);
