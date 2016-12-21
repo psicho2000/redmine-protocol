@@ -65,11 +65,6 @@
     "description": "Recipient for the mail with protocol attachment"
   },
   {
-    "name": "redmine.mail.host",
-    "type": "java.lang.String",
-    "description": "Host for sending the protocol mail"
-  },
-  {
     "name": "redmine.mail.subject",
     "type": "java.lang.String",
     "description": "Subject for sending the protocol mail. Must contain exactly one template parameter: the date of the meeting (denoted as %s)."

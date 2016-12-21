@@ -14,7 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,6 +52,9 @@ public class ProtocolController {
     private String issueLinkPrefix;
 
     @Autowired
+    JavaMailSender mailSender;
+
+    @Autowired
     AttachmentHandler attachmentHandler;
 
     @Autowired
@@ -85,7 +88,7 @@ public class ProtocolController {
         protocolStartDate = protocol.getStartDate();
         String isoDate = DateUtils.dateToIso(protocolStartDate);
 
-        startITextile(getProtocolFileName());
+        startITextile(getProtocolPath());
         writeDocumentHeader();
         startTable();
 
@@ -244,19 +247,16 @@ public class ProtocolController {
             subject.append(DateUtils.dateToGer(protocolStartDate));
             protocol.setSubject(subject.toString());
             protocol.setStatusId(issueHandler.getStatusByName(appConfig.getRedmineProtocolClosed()));
-            File attachment = new File(getProtocolFileName());
+            File attachment = new File(getProtocolPath());
             attachmentHandler.addAttachment(protocol.getId(), attachment);
             issueHandler.updateIssue(protocol);
         }
     }
 
     private void sendProtocol() {
-        JavaMailSenderImpl sender = new JavaMailSenderImpl();
         MailConfigurer mailConfig = appConfig.getMailConfigurer();
-        sender.setHost(mailConfig.getHost());
-
-        MimeMessage message = sender.createMimeMessage();
-        FileSystemResource file = new FileSystemResource(new File(getProtocolFileName()));
+        MimeMessage message = mailSender.createMimeMessage();
+        FileSystemResource file = new FileSystemResource(new File(getProtocolPath()));
 
         MimeMessageHelper helper;
         try {
@@ -270,14 +270,18 @@ public class ProtocolController {
             ex.printStackTrace();
         }
 
-        sender.send(message);
+        mailSender.send(message);
     }
 
     // TODO create a protocol wrapper
 
     private String getProtocolFileName() {
-        return new StringBuilder().append(PROTOCOL_PATH).append("/").append(PROTOCOL_FILE_PREFIX)
-            .append(DateUtils.dateToIso(protocolStartDate)).append(PDF_SUFFIX).toString();
+        return new StringBuilder().append(PROTOCOL_FILE_PREFIX).append(DateUtils.dateToIso(protocolStartDate)).append(PDF_SUFFIX)
+            .toString();
+    }
+
+    private String getProtocolPath() {
+        return new StringBuilder().append(PROTOCOL_PATH).append("/").append(getProtocolFileName()).toString();
     }
 
     private String getProtocolValue(String fieldName) {

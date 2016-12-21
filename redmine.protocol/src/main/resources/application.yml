@@ -3,7 +3,22 @@ server:
 security:
   user:
     name: markus
-    password: Hhw9JU90uQLp5s5WudFE 
+    password: Hhw9JU90uQLp5s5WudFE
+spring:
+  mail:
+    protocol: smtp
+    host: smtp.gmail.com
+    port: 465
+    username: markus.d.meier@gmail.com
+    password: jnhubttkecqqlsap
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+      mail.smtp.starttls.required: true
+      mail.smtp.socketFactory.port: 465
+      mail.smtp.debug: true
+      mail.smtp.socketFactory.class: javax.net.ssl.SSLSocketFactory
+      mail.smtp.socketFactory.fallback: false
 
 redmine:
   issues:
@@ -27,6 +42,5 @@ redmine:
     closed: Erledigt
   mail:
     recipient: markus.d.meier@gmail.com
-    host: gmail.com
     subject: Protokoll vom Gemeinderat am %s
     body: Hallo lieber Gemeinderat,<br/><br/>hier das Protokoll von unserer Sitzung am %s.<br/><br/>Vielen Dank für eure Mitarbeit!<br/><br/>Liebe Grüße,<br/>Euer Markus

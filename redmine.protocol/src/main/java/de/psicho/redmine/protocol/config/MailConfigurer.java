@@ -11,7 +11,6 @@ import lombok.Data;
 public class MailConfigurer {
 
     private String recipient;
-    private String host;
     private String subject;
     private String body;
 }
