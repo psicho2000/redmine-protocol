@@ -1,6 +1,8 @@
 Letzte Schritte:
 
  * Logging (insbes. für Fehler)
+    * Fehler direkt loggen und erneut werfen
+    * Im Controller in die Response schreiben
  * Test MySQL Connection for Lifeline (running Jar directly on Lifeline)
  * closeProtocol() entkommentieren und testen
  
