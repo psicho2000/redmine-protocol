@@ -215,6 +215,8 @@ public class ProtocolController {
         String replaced = content;
         for (String member : redmineProtocol.getMembers()) {
             Matcher matcher = Pattern.compile("(" + member + ")([^a-zA-ZäöüÄÖÜß])").matcher(replaced);
+            // dirty hack: don't use html tags - redmine.protocol may not know redmine.iTextile is using html internally
+            // sadly, it does not work otherwise
             replaced = matcher.replaceAll("<b>%{background:yellow}$1%</b>$2");
         }
         return replaced;
