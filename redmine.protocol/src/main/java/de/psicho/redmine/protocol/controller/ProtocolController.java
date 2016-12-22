@@ -214,8 +214,8 @@ public class ProtocolController {
     private String markPersons(String content) {
         String replaced = content;
         for (String member : redmineProtocol.getMembers()) {
-            Matcher matcher = Pattern.compile("(" + member + ")[^a-zA-ZäöüÄÖÜß]").matcher(replaced);
-            replaced = matcher.replaceAll("%{background:yellow}$1%");
+            Matcher matcher = Pattern.compile("(" + member + ")([^a-zA-ZäöüÄÖÜß])").matcher(replaced);
+            replaced = matcher.replaceAll("<b>%{background:yellow}$1%</b>$2");
         }
         return replaced;
     }

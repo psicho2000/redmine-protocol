@@ -8,7 +8,6 @@ Letzte Schritte:
  * Doppelte Listen funktionieren nicht:
     * Erste Ebene
     ** Zweite Ebene
- * markPersons funktioniert nicht richtig
    
 Reorganize ProtocolController
    
