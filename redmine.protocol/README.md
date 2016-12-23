@@ -3,8 +3,8 @@
 - Eingabe der Issue-ID per Rest-Param (Alternativ: Web-GUI)
     `http://lifeline-herne.de:8090/protocol/{issueId}`
   
-  falls das Protokoll nicht geschlossen werden soll:
-    `http://lifeline-herne.de:8090/protocol/{issueId}?autoclose=false`
+  falls das Protokoll geschlossen werden soll:
+    `http://lifeline-herne.de:8090/protocol/{issueId}?autoclose=true`
     * setzt Subject
     * fügt PDF hinzu
     * schließt das Protokoll 

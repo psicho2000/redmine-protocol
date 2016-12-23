@@ -3,9 +3,11 @@ package de.psicho.redmine.protocol.controller;
 import java.util.List;
 
 import de.psicho.redmine.protocol.model.IssueJournalWrapper;
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 
-@Data
+@Builder
+@Getter
 public class ResponseInfo {
 
     private String issueId;
