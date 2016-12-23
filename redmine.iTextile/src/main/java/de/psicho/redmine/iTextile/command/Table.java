@@ -125,7 +125,6 @@ public class Table implements Command {
     }
 
     private PdfPCell processCellWithFormat(Cell cell, BaseColor backgroundColor) {
-        PdfPCell pdfCell;
         Chunk chunk;
         TextProperty formatting = cell.getFormatting();
         if (formatting != null) {
@@ -135,7 +134,7 @@ public class Table implements Command {
             chunk = new Chunk(cell.getContent());
         }
         Phrase phrase = new Phrase(chunk);
-        pdfCell = new PdfPCell(phrase);
+        PdfPCell pdfCell = new PdfPCell(phrase);
         if (backgroundColor != null) {
             pdfCell.setBackgroundColor(backgroundColor);
         }
@@ -146,8 +145,7 @@ public class Table implements Command {
     }
 
     private PdfPCell processCellWithDialect(Cell cell, Dialect dialect) {
-        PdfPCell pdfCell;
-        pdfCell = new PdfPCell();
+        PdfPCell pdfCell = new PdfPCell();
         String htmlContent = new MarkupParser(dialect).parseToHtml(cell.getContent());
         ElementList list;
         try {
