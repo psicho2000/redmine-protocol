@@ -18,6 +18,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.itextpdf.text.BaseColor;
@@ -90,7 +91,8 @@ public class ProtocolController {
     }
 
     @RequestMapping("/protocol/{issueId}")
-    public String createProtocol(@PathVariable String issueId) {
+    public String createProtocol(@PathVariable String issueId,
+        @RequestParam(name = "autoclose", defaultValue = "true") boolean autoclose) {
         protocol = validator.validate(issueId);
         protocolStartDate = protocol.getStartDate();
         String isoDate = DateUtils.dateToIso(protocolStartDate);
@@ -108,8 +110,11 @@ public class ProtocolController {
         endTable();
         finalizeITextile();
 
-        // FIXME temporarily don't close the protocol
-        // closeProtocol();
+        System.out.println(String.format("autoclose = %b", autoclose));
+
+        if (autoclose) {
+            closeProtocol();
+        }
         sendProtocol();
 
         return createResponse(issueId, isoDate, statusJournals, topJournals);
