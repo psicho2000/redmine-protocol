@@ -179,12 +179,18 @@ public class iTextile {
         table = null;
     }
 
-    public void createFile() {
+    /**
+     * <p>Creates the pdf file and processes all provided Commands as input
+     * 
+     * @throws DocumentCreationException when file could not be created
+     * @throws ProcessingException when input could not be processed
+     */
+    public void createFile() throws DocumentCreationException {
         Document document = new Document();
         try {
             PdfWriter.getInstance(document, new FileOutputStream(filename));
         } catch (FileNotFoundException | DocumentException ex) {
-            ex.printStackTrace();
+            throw new DocumentCreationException(ex);
         }
         document.open();
         commands.forEach(command -> command.process(document));

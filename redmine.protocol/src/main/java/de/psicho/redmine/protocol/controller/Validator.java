@@ -76,7 +76,7 @@ public class Validator {
 
         Issue protocol = openTicket(issueId);
         if (protocol == null) {
-            throw new ValidationException(String.format("Ticket '%d' konnte nicht gefunden werden.", issueId));
+            throw new ValidationException(String.format("Ticket '%s' konnte nicht gefunden werden.", issueId));
         }
 
         validation = validateProtocol(protocol);

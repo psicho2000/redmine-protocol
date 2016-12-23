@@ -5,6 +5,7 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Font;
 
+import de.psicho.redmine.iTextile.ProcessingException;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -14,7 +15,7 @@ public class Paragraph implements Command {
     final private TextProperty property;
 
     @Override
-    public void process(Document document) {
+    public void process(Document document) throws ProcessingException {
         Font font = new Font(property.getFont(), property.getSize(), property.getStyle(), property.getColor());
         Chunk chunk = new Chunk(text, font);
         com.itextpdf.text.Paragraph paragraph = new com.itextpdf.text.Paragraph(chunk);
@@ -23,7 +24,7 @@ public class Paragraph implements Command {
         try {
             document.add(paragraph);
         } catch (DocumentException ex) {
-            ex.printStackTrace();
+            throw new ProcessingException(ex);
         }
     }
 

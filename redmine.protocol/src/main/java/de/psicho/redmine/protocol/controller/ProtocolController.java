@@ -1,6 +1,7 @@
 package de.psicho.redmine.protocol.controller;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -12,6 +13,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -29,6 +31,8 @@ import com.taskadapter.redmineapi.bean.CustomField;
 import com.taskadapter.redmineapi.bean.Issue;
 import com.taskadapter.redmineapi.bean.User;
 
+import de.psicho.redmine.iTextile.DocumentCreationException;
+import de.psicho.redmine.iTextile.ProcessingException;
 import de.psicho.redmine.iTextile.iTextile;
 import de.psicho.redmine.iTextile.command.TextProperty;
 import de.psicho.redmine.protocol.api.AttachmentHandler;
@@ -41,9 +45,11 @@ import de.psicho.redmine.protocol.dao.StatusDao;
 import de.psicho.redmine.protocol.dao.TopDao;
 import de.psicho.redmine.protocol.model.IssueJournalWrapper;
 import de.psicho.redmine.protocol.utils.DateUtils;
+import lombok.extern.slf4j.Slf4j;
 import net.java.textilej.parser.markup.textile.TextileDialect;
 
 @RestController
+@Slf4j
 public class ProtocolController {
 
     private final static String PROTOCOL_PATH = "results";
@@ -51,25 +57,25 @@ public class ProtocolController {
     private final static String PDF_SUFFIX = ".pdf";
 
     @Autowired
-    JavaMailSender mailSender;
+    private JavaMailSender mailSender;
 
     @Autowired
-    AttachmentHandler attachmentHandler;
+    private AttachmentHandler attachmentHandler;
 
     @Autowired
-    IssueHandler issueHandler;
+    private IssueHandler issueHandler;
 
     @Autowired
-    UserHandler userHandler;
+    private UserHandler userHandler;
 
     @Autowired
-    StatusDao statusDao;
+    private StatusDao statusDao;
 
     @Autowired
-    TopDao topDao;
+    private TopDao topDao;
 
     @Autowired
-    AppConfig appConfig;
+    private AppConfig appConfig;
 
     private Protocol redmineProtocol;
     private String issueLinkPrefix;
@@ -93,45 +99,64 @@ public class ProtocolController {
     @RequestMapping("/protocol/{issueId}")
     public String createProtocol(@PathVariable String issueId,
         @RequestParam(name = "autoclose", defaultValue = "true") boolean autoclose) {
-        protocol = validator.validate(issueId);
-        protocolStartDate = protocol.getStartDate();
-        String isoDate = DateUtils.dateToIso(protocolStartDate);
 
-        startITextile(getProtocolPath());
-        writeDocumentHeader();
-        startTable();
+        ResponseInfo responseInfo = new ResponseInfo();
+        List<Exception> exceptions = new ArrayList<>();
 
-        List<IssueJournalWrapper> statusJournals = statusDao.findJournals(isoDate);
-        processStatus(statusJournals);
+        try {
+            protocol = validator.validate(issueId);
+            protocolStartDate = protocol.getStartDate();
+            String isoDate = DateUtils.dateToIso(protocolStartDate);
 
-        List<IssueJournalWrapper> topJournals = topDao.findJournals(isoDate);
-        processTop(topJournals);
+            startITextile(getProtocolPath());
+            writeDocumentHeader();
+            startTable();
 
-        endTable();
-        finalizeITextile();
+            List<IssueJournalWrapper> statusJournals = statusDao.findJournals(isoDate);
+            processStatus(statusJournals);
 
-        System.out.println(String.format("autoclose = %b", autoclose));
+            List<IssueJournalWrapper> topJournals = topDao.findJournals(isoDate);
+            processTop(topJournals);
 
-        if (autoclose) {
-            closeProtocol();
+            endTable();
+            finalizeITextile();
+
+            if (autoclose) {
+                closeProtocol();
+            }
+            sendProtocol();
+
+            responseInfo.setIssueId(issueId);
+            responseInfo.setIsoDate(isoDate);
+            responseInfo.setStatusJournals(statusJournals);
+            responseInfo.setTopJournals(topJournals);
+        } catch (ValidationException | DocumentCreationException | ProcessingException ex) {
+            exceptions.add(ex);
+            log.error(ExceptionUtils.getStackTrace(ex));
         }
-        sendProtocol();
 
-        return createResponse(issueId, isoDate, statusJournals, topJournals);
+        return createResponse(responseInfo, exceptions);
     }
 
-    private String createResponse(String issueId, String isoDate, List<IssueJournalWrapper> statusJournals,
-        List<IssueJournalWrapper> topJournals) {
+    private String createResponse(ResponseInfo responseInfo, List<Exception> thrownExceptions) {
 
         StringBuffer result = new StringBuffer();
-        result.append("Creating protocol for id: ");
-        result.append(issueId);
-        result.append("<br>Querying for date ");
-        result.append(isoDate);
-        result.append("<br># StatusItems: ");
-        result.append(statusJournals.size());
-        result.append("<br># TopItems: ");
-        result.append(topJournals.size());
+
+        if (thrownExceptions.size() == 0) {
+            result.append("Creating protocol for id: ");
+            result.append(responseInfo.getIssueId());
+            result.append("<br>Querying for date ");
+            result.append(responseInfo.getIsoDate());
+            result.append("<br># StatusItems: ");
+            result.append(responseInfo.getStatusJournals().size());
+            result.append("<br># TopItems: ");
+            result.append(responseInfo.getTopJournals().size());
+        } else {
+            result.append("<pre>");
+            thrownExceptions.forEach(ex -> result.append(ExceptionUtils.getStackTrace(ex)));
+            result.append("</pre>");
+        }
+
         return result.toString();
     }
 
@@ -143,7 +168,7 @@ public class ProtocolController {
         iTextile = new iTextile(filename);
     }
 
-    private void finalizeITextile() {
+    private void finalizeITextile() throws DocumentCreationException {
         iTextile.createFile();
     }
 

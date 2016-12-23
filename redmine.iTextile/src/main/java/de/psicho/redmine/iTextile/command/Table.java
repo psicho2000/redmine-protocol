@@ -24,6 +24,7 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.tool.xml.ElementList;
 import com.itextpdf.tool.xml.XMLWorkerHelper;
 
+import de.psicho.redmine.iTextile.ProcessingException;
 import net.java.textilej.parser.MarkupParser;
 import net.java.textilej.parser.markup.Dialect;
 
@@ -81,7 +82,7 @@ public class Table implements Command {
         try {
             document.add(table);
         } catch (DocumentException ex) {
-            ex.printStackTrace();
+            throw new ProcessingException(ex);
         }
     }
 
@@ -101,7 +102,7 @@ public class Table implements Command {
             table.setTotalWidth(relativeWidths);
             table.setLockedWidth(true);
         } catch (DocumentException ex) {
-            ex.printStackTrace();
+            throw new ProcessingException(ex);
         }
     }
 
@@ -117,7 +118,6 @@ public class Table implements Command {
             pdfCell = processCellWithDialect(cell, dialect);
         } else {
             pdfCell = processCellWithFormat(cell, backgroundColor);
-
         }
 
         pdfCell.setBorder(border);
@@ -156,7 +156,7 @@ public class Table implements Command {
                 pdfCell.addElement(element);
             }
         } catch (IOException ex) {
-            ex.printStackTrace();
+            throw new ProcessingException(ex);
         }
         return pdfCell;
     }
