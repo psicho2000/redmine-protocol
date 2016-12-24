@@ -56,4 +56,4 @@ redmine:
   mail:
     recipient: markus.d.meier@gmail.com
     subject: Protokoll vom Gemeinderat am %s
-    body: Hallo lieber Gemeinderat,<br/><br/>hier das Protokoll von unserer Sitzung am %s.<br/><br/>Vielen Dank für eure Mitarbeit!<br/><br/>Liebe Grüße,<br/>Euer Markus
+    body: Hallo lieber Gemeinderat,<br/><br/>anbei das Protokoll von unserer Sitzung am %s.<br/>Es kann auch online eingesehen werden unter %s.<br/><br/>Vielen Dank für eure Mitarbeit!<br/><br/>Liebe Grüße,<br/>Euer Markus

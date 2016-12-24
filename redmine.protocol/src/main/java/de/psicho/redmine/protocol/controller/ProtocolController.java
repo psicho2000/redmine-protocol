@@ -169,10 +169,13 @@ public class ProtocolController {
         MimeMessageHelper helper;
         try {
             String dateGer = DateUtils.dateToGer(protocolStartDate);
+            String linkToProtocol = appConfig.getRedmine().getIssues().getLink() + protocol.getId();
+            linkToProtocol = String.format("<a href=\"%s\">%s</a>", linkToProtocol, linkToProtocol);
             helper = new MimeMessageHelper(message, true);
             helper.setTo(mailConfig.getRecipient());
             helper.setSubject(String.format(mailConfig.getSubject(), dateGer));
-            helper.setText(String.format("<html><body>" + mailConfig.getBody() + "</body></html>", dateGer), true);
+            helper.setText(String.format("<html><body>" + mailConfig.getBody() + "</body></html>", dateGer, linkToProtocol),
+                true);
             helper.addAttachment(getProtocolFileName(protocolStartDate), file);
         } catch (MessagingException ex) {
             ex.printStackTrace();
