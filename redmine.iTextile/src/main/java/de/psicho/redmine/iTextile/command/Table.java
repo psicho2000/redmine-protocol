@@ -25,6 +25,7 @@ import com.itextpdf.tool.xml.ElementList;
 import com.itextpdf.tool.xml.XMLWorkerHelper;
 
 import de.psicho.redmine.iTextile.ProcessingException;
+import de.psicho.redmine.iTextile.utils.ResourceUtils;
 import net.java.textilej.parser.MarkupParser;
 import net.java.textilej.parser.markup.Dialect;
 
@@ -33,6 +34,7 @@ import net.java.textilej.parser.markup.Dialect;
  */
 public class Table implements Command {
 
+    private static final String STYLESHEET = "style.css";
     private static final float A4_WIDTH = 523f;
     private int columns;
     private LinkedList<Row> rows;
@@ -147,9 +149,11 @@ public class Table implements Command {
     private PdfPCell processCellWithDialect(Cell cell, Dialect dialect) {
         PdfPCell pdfCell = new PdfPCell();
         String htmlContent = new MarkupParser(dialect).parseToHtml(cell.getContent());
+        htmlContent = ResourceUtils.readResource("demo.htm"); // FIXME - remove after testing (including demo.htm itself)
+        String css = ResourceUtils.readResource(STYLESHEET);
         ElementList list;
         try {
-            list = XMLWorkerHelper.parseToElementList(htmlContent, null);
+            list = XMLWorkerHelper.parseToElementList(htmlContent, css);
             for (Element element : list) {
                 pdfCell.addElement(element);
             }
