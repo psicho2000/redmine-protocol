@@ -20,6 +20,9 @@ Bugs "Doppelte Listen funktionieren nicht"
 			</li>
 		</ul>						</ul>
 
+http://www.programmableweb.com/api/chuck-norris-facts
+http://www.programmableweb.com/api/xkcd-swagger
+
 Inbetriebnahme
  * Test MySQL Connection for Lifeline (running Jar directly on Lifeline)
 
