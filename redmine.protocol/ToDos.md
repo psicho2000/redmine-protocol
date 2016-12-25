@@ -1,24 +1,8 @@
-Bugs "Doppelte Listen funktionieren nicht"
-    * Erste Ebene
-    ** Zweite Ebene
+Bugs
+	* #537
+		- Namen hinter Klammern fehlen 
+		- Lobpreis zum Schluss -> Markus fragt Ann
 
-	"Nested lists don't work in a cell"
-	http://developers.itextpdf.com/de/node/2243
-	Allerdings gilt das nur für die Standard-Variante. Die Working-Variante geht auch in Zellen!
-	
-	Fazit:
-		* MarkupParser() erzeugt korrektes HTML
-		* XMLWorkerHelper kann dieses XML außerhalb von Tabellen verstehen
-		* innerhalb von Tabellen muss es anders formuliert werden
-	
-	Transformer:					zu
-		<ul>						<ul>
-			<li>1						<li>1</li>
-				<ul>					<ul>
-					<li>2</li>			<li>2</li>
-				</ul>					</ul>
-			</li>
-		</ul>						</ul>
 
 http://www.programmableweb.com/api/chuck-norris-facts
 http://www.programmableweb.com/api/xkcd-swagger
