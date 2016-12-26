@@ -10,6 +10,7 @@ Später
 	http://www.programmableweb.com/api/chuck-norris-facts (bad quality)
  * Protokoll-Nummer automatisch zählen
  * Agenda erstellen
+ * ggf. Sortierung der Journals nach Zeitstempel?
  
 Reorganize ProtocolController
    
