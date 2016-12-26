@@ -29,13 +29,14 @@ import java.util.regex.Pattern;
 
 public class ListUtils {
 
-    // *? = non greedy
-    private static final Pattern pattern = Pattern.compile("li>(.*?)<", Pattern.DOTALL);
+    // *? non greedy search
+    // ?= positive look-ahead
+    private static final Pattern pattern = Pattern.compile("(<li>.*?)(?=<ol>|<ul>|<\\/ul>|<\\/ol>|<li>)", Pattern.DOTALL);
 
     public static String transformLists(String input) {
         String intermediate = input.replace("</li>", "");
         Matcher matcher = pattern.matcher(intermediate);
-        String replaced = matcher.replaceAll("li>$1</li><");
+        String replaced = matcher.replaceAll("$1</li>");
         return replaced;
     }
 }

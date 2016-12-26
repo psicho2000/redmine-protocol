@@ -1,9 +1,3 @@
-Bugs
-	* #537
-		- Namen hinter Klammern fehlen 
-		- Lobpreis zum Schluss -> Markus fragt Ann
-
-
 http://www.programmableweb.com/api/chuck-norris-facts
 http://www.programmableweb.com/api/xkcd-swagger
 
