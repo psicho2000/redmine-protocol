@@ -6,8 +6,8 @@ Inbetriebnahme
 Später
 
  * Zitate einfügen
-	http://www.programmableweb.com/api/chuck-norris-facts
 	http://www.programmableweb.com/api/xkcd-swagger
+	http://www.programmableweb.com/api/chuck-norris-facts (bad quality)
  * Protokoll-Nummer automatisch zählen
  * Agenda erstellen
  
