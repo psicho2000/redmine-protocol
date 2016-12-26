@@ -2,6 +2,7 @@ package de.psicho.redmine.iTextile.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.charset.Charset;
 
 import org.apache.commons.io.FileUtils;
@@ -13,7 +14,9 @@ public class ResourceUtils {
 
     public static String readResource(String resourceName) {
         ClassLoader classLoader = new ResourceUtils().getClass().getClassLoader();
-        File file = new File(classLoader.getResource(resourceName).getFile());
+        URL resource = classLoader.getResource(resourceName);
+        String fileName = resource.getFile();
+        File file = new File(fileName);
         String fileContents = StringUtils.EMPTY;
         try {
             fileContents = FileUtils.readFileToString(file, Charset.defaultCharset());

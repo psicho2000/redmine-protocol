@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.psicho</groupId>
     <artifactId>redmine.protocol</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>Redmine Protocol</name>
     <description>Create protocol from redmine trackers</description>
 
@@ -22,7 +22,7 @@
         <dependency>
             <groupId>de.psicho</groupId>
             <artifactId>redmine.iTextile</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>

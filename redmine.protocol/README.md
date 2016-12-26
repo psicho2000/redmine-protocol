@@ -1,3 +1,6 @@
+# Ausführen
+java -jar -Dspring.profiles.active=remote redmine.protocol-1.0.0.jar 
+
 # Einführung
 - spring boot application mit externer DB und spring JDBCTemplate
 - Eingabe der Issue-ID per Rest-Param (Alternativ: Web-GUI)

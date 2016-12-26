@@ -1,7 +1,13 @@
 Inbetriebnahme
- * Test MySQL Connection for Lifeline (running Jar directly on Lifeline)
+1. redmine-protocol in Autostart packen
 
-----
+2. DB-Verbindung korrigieren
+	http://stackoverflow.com/questions/6865538/solving-a-communications-link-failure-with-jdbc-and-mysql
+
+3. mvn clean install (für redmine.protocol) zum Laufen bringen
+
+4. Protokoll verschicken
+_________________________
 
 Später
 
