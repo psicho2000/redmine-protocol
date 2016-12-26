@@ -10,7 +10,6 @@ import java.util.regex.Pattern;
 //
 // This is true only for standard HTML. For non standard this can be done in cells aswell. 
 
-// 
 // Conclusion:
 //     * MarkupParser() creates correct HTML
 //     * XMLWorkerHelper can use this HTML outside of table
@@ -34,9 +33,8 @@ public class ListUtils {
     private static final Pattern pattern = Pattern.compile("(<li>.*?)(?=<ol>|<ul>|<\\/ul>|<\\/ol>|<li>)", Pattern.DOTALL);
 
     public static String transformLists(String input) {
-        String intermediate = input.replace("</li>", "");
-        Matcher matcher = pattern.matcher(intermediate);
-        String replaced = matcher.replaceAll("$1</li>");
-        return replaced;
+        String strippedInput = input.replace("</li>", "");
+        Matcher matcher = pattern.matcher(strippedInput);
+        return matcher.replaceAll("$1</li>");
     }
 }
