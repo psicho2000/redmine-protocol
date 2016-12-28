@@ -1,5 +1,7 @@
 # Ausführen
-java -jar -Dspring.profiles.active=remote redmine.protocol-1.0.0.jar 
+	java -jar redmine.protocol-1.0.0.jar
+ggf. mit Parameter - für Lifeline-Server:
+	java -jar -Dspring.profiles.active=remote -Dlogging.file=/home/markus/redmine.protocol.log /home/markus/redmine.protocol-1.0.0.jar
 
 # Einführung
 - spring boot application mit externer DB und spring JDBCTemplate
