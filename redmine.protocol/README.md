@@ -21,6 +21,10 @@ ggf. mit Parameter - für Lifeline-Server:
     * Renderer für Wiki-Syntax
     * Zeilenumbrüche / Paragraphen
     * Tabellen
+    
+# Benutzung
+* Namen vom GR immer in der Schreibweise gemäß application.yml, redmine.protocol.members schreiben
+* Anhänge immer in der Form attachment:"Dateiname.endung" schreiben
 
 # Quellen
 ## API für Redmine

@@ -3,6 +3,7 @@ package de.psicho.redmine.protocol.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import de.psicho.redmine.protocol.api.AttachmentHandler;
 import de.psicho.redmine.protocol.api.IssueHandler;
@@ -12,6 +13,7 @@ import lombok.Getter;
 
 @Configuration
 @Getter
+@EnableJpaRepositories(basePackages = "de.psicho.redmine.protocol.repository")
 public class AppConfig {
 
     @Autowired

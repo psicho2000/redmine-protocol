@@ -2,7 +2,9 @@ package de.psicho.redmine.protocol.service;
 
 import java.io.File;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -25,6 +27,7 @@ import de.psicho.redmine.iTextile.command.TextProperty;
 import de.psicho.redmine.protocol.api.IssueHandler;
 import de.psicho.redmine.protocol.config.AppConfig;
 import de.psicho.redmine.protocol.config.Protocol;
+import de.psicho.redmine.protocol.model.AttachedFile;
 import de.psicho.redmine.protocol.model.IssueJournalWrapper;
 import de.psicho.redmine.protocol.utils.DateUtils;
 import net.java.textilej.parser.markup.textile.TextileDialect;
@@ -65,7 +68,8 @@ public class ITextService {
             protocolService.getProtocolUser(protocol, redmineProtocol.getFields().getModeration()));
     }
 
-    public void processTop(List<IssueJournalWrapper> topJournals) {
+    public Set<AttachedFile> processTop(List<IssueJournalWrapper> topJournals) {
+        Set<AttachedFile> result = new HashSet<>();
         for (IssueJournalWrapper top : topJournals) {
             String number = setIssueLinks("#" + top.getIssueId().toString());
             String title = "*" + top.getIssueSubject() + "*\r\n";
@@ -76,6 +80,7 @@ public class ITextService {
                 Issue issue = issueHandler.getIssue(top.getIssueId());
                 content = issue.getDescription();
             }
+            result.addAll(extractAttachments(content, top.getIssueId()));
             content = postProcessContent(content);
             Integer assignee = top.getAssignee();
             if (assignee == null || assignee == 0) {
@@ -84,6 +89,7 @@ public class ITextService {
             String responsible = protocolService.getProtocolUser(assignee);
             iTextile.addTableRow(number, title + content, responsible);
         }
+        return result;
     }
 
     public void startITextile(String filename) {
@@ -176,13 +182,25 @@ public class ITextService {
         iTextile.addParagraph(title, TextProperty.builder().size(12.0f).style(Font.NORMAL).color(BaseColor.BLACK).build());
     }
 
-    private String postProcessContent(String statusContent) {
-        String linked = setIssueLinks(statusContent);
-        return markPersons(linked);
+    private String postProcessContent(String content) {
+        String linked = setIssueLinks(content);
+        String unattached = linked.replace("attachment:", "");
+        return markPersons(unattached);
     }
 
-    private String setIssueLinks(String statusContent) {
-        Matcher matcher = Pattern.compile("#(\\d*)").matcher(statusContent);
+    private Set<AttachedFile> extractAttachments(String content, Integer issueId) {
+        Matcher matcher = Pattern.compile("attachment:\"(.*?)\"").matcher(content);
+        Set<AttachedFile> result = new HashSet<>();
+        while (matcher.find()) {
+            String attachedFileName = matcher.group().replace("\"", "").replace("attachment:", "");
+            AttachedFile attachedFile = AttachedFile.builder().issueId(issueId).fileName(attachedFileName).build();
+            result.add(attachedFile);
+        }
+        return result;
+    }
+
+    private String setIssueLinks(String content) {
+        Matcher matcher = Pattern.compile("#(\\d*)").matcher(content);
         return matcher.replaceAll("\"#$1\":" + issueLinkPrefix + "$1");
     }
 }

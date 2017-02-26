@@ -6,6 +6,7 @@ import static de.psicho.redmine.protocol.service.ProtocolService.getProtocolPath
 import java.io.File;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import javax.annotation.PostConstruct;
@@ -14,6 +15,7 @@ import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -31,6 +33,7 @@ import de.psicho.redmine.protocol.config.Mail;
 import de.psicho.redmine.protocol.config.Protocol;
 import de.psicho.redmine.protocol.dao.StatusDao;
 import de.psicho.redmine.protocol.dao.TopDao;
+import de.psicho.redmine.protocol.model.AttachedFile;
 import de.psicho.redmine.protocol.model.IssueJournalWrapper;
 import de.psicho.redmine.protocol.service.ITextService;
 import de.psicho.redmine.protocol.service.ProtocolService;
@@ -96,7 +99,7 @@ public class ProtocolController {
 
             List<IssueJournalWrapper> topJournals = topDao.findJournals(isoDate);
             topJournals = protocolService.filterTopJournals(topJournals);
-            iTextService.processTop(topJournals);
+            Set<AttachedFile> attachedFiles = iTextService.processTop(topJournals);
 
             iTextService.endTable();
             iTextService.finalizeITextile();
@@ -104,7 +107,7 @@ public class ProtocolController {
             if (autoclose) {
                 closeProtocol(protocol);
             }
-            sendProtocol(protocol);
+            sendProtocol(protocol, attachedFiles);
 
             responseInfo = ResponseInfo.builder().issueId(issueId).isoDate(isoDate).statusJournals(statusJournals)
                 .topJournals(topJournals).build();
@@ -161,7 +164,7 @@ public class ProtocolController {
         issueHandler.updateIssue(protocol);
     }
 
-    private void sendProtocol(Issue protocol) {
+    private void sendProtocol(Issue protocol, Set<AttachedFile> attachedFiles) {
         Date protocolStartDate = protocol.getStartDate();
         Mail mailConfig = appConfig.getRedmine().getMail();
         MimeMessage message = mailSender.createMimeMessage();
@@ -178,6 +181,12 @@ public class ProtocolController {
             helper.setText(String.format("<html><body>" + mailConfig.getBody() + "</body></html>", dateGer, linkToProtocol),
                 true);
             helper.addAttachment(getProtocolFileName(protocolStartDate), file);
+
+            for (AttachedFile attachedFile : attachedFiles) {
+                byte[] binaryAttachment = attachmentHandler.getAttachment(attachedFile.getIssueId(), attachedFile.getFileName());
+                ByteArrayResource byteArrayResource = new ByteArrayResource(binaryAttachment);
+                helper.addAttachment(attachedFile.getFileName(), byteArrayResource);
+            }
         } catch (MessagingException ex) {
             ex.printStackTrace();
         }
