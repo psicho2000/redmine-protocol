@@ -95,6 +95,7 @@ public class ProtocolController {
             iTextService.processStatus(protocol, statusJournals);
 
             List<IssueJournalWrapper> topJournals = topDao.findJournals(isoDate);
+            topJournals = protocolService.filterTopJournals(topJournals);
             iTextService.processTop(topJournals);
 
             iTextService.endTable();
