@@ -1,16 +1,11 @@
 server:
   port: 8090
-security:
-  user:
-    name: markus
-    password: Hhw9JU90uQLp5s5WudFE
 spring:
   mail:
     protocol: smtp
     host: smtp.gmail.com
     port: 465
     username: markus.d.meier@gmail.com
-    password: jnhubttkecqqlsap
     properties:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
@@ -25,7 +20,6 @@ logging:
 redmine:
   api:
     url: http://redmine.lifeline-herne.de/
-    accesskey: 554067cb32616e18b0c977af2eb21a0096dfff40
   issues:
     link: http://redmine.lifeline-herne.de/issues/
   protocol:
