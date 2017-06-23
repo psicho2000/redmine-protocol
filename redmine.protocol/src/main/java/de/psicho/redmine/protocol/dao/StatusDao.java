@@ -20,10 +20,10 @@ public class StatusDao {
 
     public List<IssueJournalWrapper> findJournals(String changeDate) {
 
-        String sql = "select issues.id, issues.subject, issues.assigned_to_id, journals.id from journals "
-            + "inner join issues on journals.journalized_id=issues.id " + "inner join trackers on issues.tracker_id=trackers.id "
-            + "where journalized_type='Issue' and trackers.name='Aufgabe' "
-            + "and substring(journals.created_on,1,10)= ? and journals.notes is not null group by issues.id";
+        String sql = "SELECT issues.id, issues.subject, issues.assigned_to_id, journals.id FROM journals "
+            + "INNER JOIN issues ON journals.journalized_id=issues.id INNER JOIN trackers ON issues.tracker_id=trackers.id "
+            + "WHERE journalized_type='Issue' AND trackers.name='Aufgabe' "
+            + "AND journals.notes <> '' AND SUBSTRING(journals.created_on,1,10)= ? GROUP BY issues.id";
 
         Object[] args = new Object[] { changeDate };
 

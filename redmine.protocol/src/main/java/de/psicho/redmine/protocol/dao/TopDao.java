@@ -20,14 +20,11 @@ public class TopDao {
 
     public List<IssueJournalWrapper> findJournals(String changeDate) {
 
-        String sql = "select issues.id, issues.subject, issues.assigned_to_id, journals.id from journals "
-            + "inner join issues on journals.journalized_id=issues.id " + "inner join trackers on issues.tracker_id=trackers.id "
-            + "where journalized_type='Issue' and trackers.name='TOP' "
-            + "and substring(journals.created_on,1,10)= ? and journals.notes is not null "
-            + "UNION select distinct issues.id, issues.subject, issues.assigned_to_id, 0 from issues "
-            + "inner join trackers on issues.tracker_id=trackers.id "
-            + "where trackers.name='TOP' and substring(issues.created_on,1,10)= ?";
-        Object[] args = new Object[] { changeDate, changeDate };
+        String sql = "SELECT issues.id, issues.subject, issues.assigned_to_id, journals.id FROM journals "
+            + "INNER JOIN issues ON journals.journalized_id=issues.id INNER JOIN trackers ON issues.tracker_id=trackers.id "
+            + "WHERE journalized_type='Issue' AND trackers.name='TOP' "
+            + "AND journals.notes <> '' AND SUBSTRING(journals.created_on,1,10)= ?";
+        Object[] args = new Object[] { changeDate };
 
         return jdbcTemplate.query(sql, args, journalHandler::retrieveJournal);
     }

@@ -53,10 +53,4 @@ public class ProtocolService {
         }
         return user.getFirstName() + " " + user.getLastName().substring(0, 1) + ".";
     }
-
-    public List<IssueJournalWrapper> filterTopJournals(List<IssueJournalWrapper> topJournals) {
-        Predicate<IssueJournalWrapper> filterByContent =
-            journal -> journal.getJournal() == null || !StringUtils.isBlank(journal.getJournal().getNotes());
-        return topJournals.stream().filter(filterByContent).collect(Collectors.toList());
-    }
 }

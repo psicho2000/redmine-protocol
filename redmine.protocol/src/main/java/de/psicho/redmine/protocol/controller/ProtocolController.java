@@ -98,7 +98,6 @@ public class ProtocolController {
             iTextService.processStatus(protocol, statusJournals);
 
             List<IssueJournalWrapper> topJournals = topDao.findJournals(isoDate);
-            topJournals = protocolService.filterTopJournals(topJournals);
             Set<AttachedFile> attachedFiles = iTextService.processTop(topJournals);
 
             iTextService.endTable();
