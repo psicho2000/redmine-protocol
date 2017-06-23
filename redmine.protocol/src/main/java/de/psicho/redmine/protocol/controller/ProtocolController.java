@@ -98,6 +98,7 @@ public class ProtocolController {
             iTextService.processStatus(protocol, statusJournals);
 
             List<IssueJournalWrapper> topJournals = topDao.findJournals(isoDate);
+            addDescription(topJournals);
             Set<AttachedFile> attachedFiles = iTextService.processTop(topJournals);
 
             iTextService.endTable();
@@ -116,6 +117,21 @@ public class ProtocolController {
         }
 
         return createResponse(responseInfo, exception, autoclose);
+    }
+
+    private void addDescription(List<IssueJournalWrapper> topJournals) {
+        for (IssueJournalWrapper topJournal : topJournals) {
+            Integer firstId = getFirstNonEmptyJournalByIssueId(topJournal.getIssueId());
+            if (topJournal.getJournal().getId() == firstId) {
+                // FIXME implement me
+                // get issue description and insert it before text of journal - or put the description in a wrapped object
+            }
+        }
+    }
+
+    private Integer getFirstNonEmptyJournalByIssueId(Integer issueId) {
+        // FIXME implement me
+        return null;
     }
 
     private String createResponse(ResponseInfo responseInfo, Exception thrownException, boolean autoclose) {
