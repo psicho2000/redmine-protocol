@@ -28,12 +28,11 @@ public class ProtocolService {
     private UserHandler userHandler;
 
     public static String getProtocolFileName(Date protocolStartDate) {
-        return new StringBuilder().append(PROTOCOL_FILE_PREFIX).append(DateUtils.dateToIso(protocolStartDate)).append(PDF_SUFFIX)
-            .toString();
+        return PROTOCOL_FILE_PREFIX + DateUtils.dateToIso(protocolStartDate) + PDF_SUFFIX;
     }
 
     public static String getProtocolPath(Date protocolStartDate) {
-        return new StringBuilder().append(PROTOCOL_PATH).append("/").append(getProtocolFileName(protocolStartDate)).toString();
+        return PROTOCOL_PATH + "/" + getProtocolFileName(protocolStartDate);
     }
 
     public String getProtocolValue(Issue protocol, String fieldName) {
@@ -52,8 +51,7 @@ public class ProtocolService {
         if (user == null) {
             throw new RuntimeException(String.format("Der User mit der Id %d konnte nicht gefunden werden.", userId));
         }
-        return new StringBuilder().append(user.getFirstName()).append(" ").append(user.getLastName().substring(0, 1)).append(".")
-            .toString();
+        return user.getFirstName() + " " + user.getLastName().substring(0, 1) + ".";
     }
 
     public List<IssueJournalWrapper> filterTopJournals(List<IssueJournalWrapper> topJournals) {
