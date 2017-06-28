@@ -4,6 +4,11 @@ ggf. mit Parameter - für Lifeline-Server:
     
 	java -jar -Dspring.profiles.active=remote -Dlogging.file=/home/markus/redmine.protocol.log /home/markus/redmine.protocol-1.1.0.jar
 
+# Installation
+     1. src/main/scripts/protocol.sh sowie target/redmine.protocol-x.y.z.jar auf den Server kopieren
+     2. Global variables in protocol.sh anpassen
+     3. alias protocol='/home/markus/protocol.sh'
+
 # Einführung
 - spring boot application mit externer DB und spring JDBCTemplate
 - Eingabe der Issue-ID per Rest-Param (Alternativ: Web-GUI)
