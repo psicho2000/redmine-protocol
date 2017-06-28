@@ -31,8 +31,7 @@ import de.psicho.redmine.protocol.api.IssueHandler;
 import de.psicho.redmine.protocol.config.AppConfig;
 import de.psicho.redmine.protocol.config.Mail;
 import de.psicho.redmine.protocol.config.Protocol;
-import de.psicho.redmine.protocol.dao.StatusDao;
-import de.psicho.redmine.protocol.dao.TopDao;
+import de.psicho.redmine.protocol.dao.IssueDao;
 import de.psicho.redmine.protocol.model.AttachedFile;
 import de.psicho.redmine.protocol.model.IssueJournalWrapper;
 import de.psicho.redmine.protocol.service.ITextService;
@@ -57,10 +56,7 @@ public class ProtocolController {
     private IssueHandler issueHandler;
 
     @Autowired
-    private StatusDao statusDao;
-
-    @Autowired
-    private TopDao topDao;
+    private IssueDao issueDao;
 
     @Autowired
     private AppConfig appConfig;
@@ -94,10 +90,10 @@ public class ProtocolController {
             iTextService.writeDocumentHeader(protocol);
             iTextService.startTable(protocol);
 
-            List<IssueJournalWrapper> statusJournals = statusDao.findJournals(isoDate);
+            List<IssueJournalWrapper> statusJournals = issueDao.findJournals("Aufgabe", isoDate);
             iTextService.processStatus(protocol, statusJournals);
 
-            List<IssueJournalWrapper> topJournals = topDao.findJournals(isoDate);
+            List<IssueJournalWrapper> topJournals = issueDao.findJournals("TOP", isoDate);
             addDescription(topJournals);
             Set<AttachedFile> attachedFiles = iTextService.processTop(topJournals);
 

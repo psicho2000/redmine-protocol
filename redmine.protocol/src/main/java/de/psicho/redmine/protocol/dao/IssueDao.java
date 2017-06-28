@@ -10,7 +10,7 @@ import de.psicho.redmine.protocol.api.JournalHandler;
 import de.psicho.redmine.protocol.model.IssueJournalWrapper;
 
 @Repository
-public class StatusDao {
+public class IssueDao {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -18,15 +18,15 @@ public class StatusDao {
     @Autowired
     private JournalHandler journalHandler;
 
-    public List<IssueJournalWrapper> findJournals(String changeDate) {
+    public List<IssueJournalWrapper> findJournals(String tracker, String changeDate) {
 
         String sql = "SELECT issues.id, issues.subject, issues.assigned_to_id, journals.id FROM journals "
             + "INNER JOIN issues ON journals.journalized_id=issues.id INNER JOIN trackers ON issues.tracker_id=trackers.id "
-            + "WHERE journalized_type='Issue' AND trackers.name='Aufgabe' "
-            + "AND journals.notes <> '' AND SUBSTRING(journals.created_on,1,10)= ? GROUP BY issues.id";
-
-        Object[] args = new Object[] { changeDate };
+            + "WHERE journalized_type='Issue' AND trackers.name= ? "
+            + "AND journals.notes <> '' AND SUBSTRING(journals.created_on,1,10)= ?";
+        Object[] args = new Object[] { tracker, changeDate };
 
         return jdbcTemplate.query(sql, args, journalHandler::retrieveJournal);
     }
+
 }
