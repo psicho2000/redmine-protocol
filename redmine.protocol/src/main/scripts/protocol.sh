@@ -40,8 +40,9 @@ if [ "$#" -ne 1 ] ; then
 	exit 3
 fi
 
+result=$(status)
+
 if [ $1 = "ps" ] ; then
-	result=$(status)
 	if [[ -z "${result// }" ]] ; then
 		echo "protocol is not running!"
 	else
@@ -49,19 +50,22 @@ if [ $1 = "ps" ] ; then
 	fi
 
 elif [ $1 == "start" ] ; then
-	result=$(status)
-	if [[ ! -z "${result// }" ]] ; then
-		echo -e "\e[31mRe-starting protocol..."
-		stop
+	if [[ -z "${result// }" ]] ; then
+		echo -e "\e[31mStarting protocol..."
 		start
 	else
-		echo -e "\e[31mStarting protocol..."
+		echo -e "\e[31mRe-starting protocol..."
+		stop
 		start
 	fi
 
 elif [ $1 == "stop" ] ; then
-	echo -e "\e[31mStopping protocol..."
-	stop
+	if [[ -z "${result// }" ]] ; then
+		echo "protocol is not running!"
+	else	
+		echo -e "\e[31mStopping protocol..."
+		stop
+	fi
 
 else
 	echo "Unknown option: '$1'. Run script without args to see help."

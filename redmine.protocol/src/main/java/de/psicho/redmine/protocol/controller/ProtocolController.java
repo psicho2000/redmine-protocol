@@ -13,6 +13,7 @@ import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.taskadapter.redmineapi.bean.Issue;
+import com.taskadapter.redmineapi.bean.Journal;
 
 import de.psicho.redmine.protocol.api.AttachmentHandler;
 import de.psicho.redmine.protocol.api.IssueHandler;
@@ -64,10 +66,10 @@ public class ProtocolController {
     private Protocol redmineProtocol;
 
     @Autowired
-    Validator validator;
+    private Validator validator;
 
     @Autowired
-    ITextService iTextService;
+    private ITextService iTextService;
 
     @PostConstruct
     private void init() {
@@ -117,17 +119,16 @@ public class ProtocolController {
 
     private void addDescription(List<IssueJournalWrapper> topJournals) {
         for (IssueJournalWrapper topJournal : topJournals) {
-            Integer firstId = getFirstNonEmptyJournalByIssueId(topJournal.getIssueId());
-            if (topJournal.getJournal().getId() == firstId) {
-                // FIXME implement me
-                // get issue description and insert it before text of journal - or put the description in a wrapped object
+            Integer firstJournalId = issueDao.getFirstNonEmptyJournalByIssueId(topJournal.getIssueId());
+            Journal journal = topJournal.getJournal();
+            if (journal.getId().equals(firstJournalId)) {
+                Issue issue = issueHandler.getIssue(topJournal.getIssueId());
+                String description = issue.getDescription();
+                if (StringUtils.isNotBlank(description)) {
+                    journal.setNotes(description + "\r\n\r\n<hr/>\r\n\r\n" + journal.getNotes());
+                }
             }
         }
-    }
-
-    private Integer getFirstNonEmptyJournalByIssueId(Integer issueId) {
-        // FIXME implement me
-        return null;
     }
 
     private String createResponse(ResponseInfo responseInfo, Exception thrownException, boolean autoclose) {
@@ -140,22 +141,25 @@ public class ProtocolController {
             result.append("</pre>");
         } else {
             Consumer<IssueJournalWrapper> issueInfoAppender =
-                issue -> result.append("<br>" + issue.getIssueId() + ": " + issue.getIssueSubject());
+                issue -> result.append("<br>").append(issue.getIssueId()).append(": ").append(issue.getIssueSubject());
 
             result.append("Creating protocol for id: ");
             result.append(responseInfo.getIssueId());
-            result.append("<br>Querying for date ");
+            result.append("<br/>Querying for date ");
             result.append(responseInfo.getIsoDate());
-            result.append("<br><h3>StatusItems: ");
+            result.append("<br/><h3>StatusItems: ");
             result.append(responseInfo.getStatusJournals().size());
             result.append("</h3> ");
             responseInfo.getStatusJournals().forEach(issueInfoAppender);
-            result.append("<br><h3>TopItems: ");
+            result.append("<br/><h3>TopItems: ");
             result.append(responseInfo.getTopJournals().size());
             result.append("</h3> ");
             responseInfo.getTopJournals().forEach(issueInfoAppender);
-            result.append("<p><br>Protocol has ");
+            result.append("<p><br/>Protocol has ");
             result.append(autoclose ? "been <strong>closed</strong>." : "<strong>not</strong> been closed.");
+            if (!autoclose) {
+                result.append("<br/>Close by appending: ?autoclose=1");
+            }
         }
 
         return result.toString();
@@ -163,12 +167,9 @@ public class ProtocolController {
 
     private void closeProtocol(Issue protocol) {
         Date protocolStartDate = protocol.getStartDate();
-        StringBuilder subject = new StringBuilder();
-        subject.append("Gemeinderat ");
-        subject.append(protocolService.getProtocolValue(protocol, redmineProtocol.getFields().getNumber()));
-        subject.append(" am ");
-        subject.append(DateUtils.dateToGer(protocolStartDate));
-        protocol.setSubject(subject.toString());
+        String subject = "Gemeinderat " + protocolService.getProtocolValue(protocol, redmineProtocol.getFields().getNumber())
+            + " am " + DateUtils.dateToGer(protocolStartDate);
+        protocol.setSubject(subject);
         protocol.setStatusId(issueHandler.getStatusByName(redmineProtocol.getClosed()));
         File attachment = new File(getProtocolPath(protocolStartDate));
         attachmentHandler.addAttachment(protocol.getId(), attachment);
