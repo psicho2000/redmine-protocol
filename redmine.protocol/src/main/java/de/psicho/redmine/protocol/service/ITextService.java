@@ -72,7 +72,7 @@ public class ITextService {
         Set<AttachedFile> result = new HashSet<>();
         for (IssueJournalWrapper top : topJournals) {
             String number = setIssueLinks("#" + top.getIssueId().toString());
-            String title = "*" + top.getIssueSubject() + "*\r\n";
+            String title = "*" + top.getIssueSubject().trim() + "*\r\n";
             String content;
             if (top.getJournal() != null) {
                 content = top.getJournal().getNotes();
