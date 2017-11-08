@@ -34,9 +34,7 @@ public class iTextile {
      * <p>Prints text as new paragraph
      * 
      * @param text the text to print
-     * @param size size of the text
-     * @param bold flag whether the text shall be bold
-     * @param color color of the text
+     * @param property printing properties
      * @throws IllegalStateException if in table mode
      */
     public void addParagraph(String text, TextProperty property) {

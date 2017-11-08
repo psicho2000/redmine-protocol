@@ -1,20 +1,34 @@
 package de.psicho.redmine.protocol.controller;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import lombok.extern.slf4j.Slf4j;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.psicho.redmine.iTextile.iTextile;
 import de.psicho.redmine.iTextile.utils.ResourceUtils;
 import net.java.textilej.parser.markup.textile.TextileDialect;
 
+@Slf4j
 public class ProtocolControllerTest {
 
     private iTextile iTextile;
     private List<String> members = Arrays.asList("Alberto", "Ann", "Anne M.", "Markus", "Stefan E.", "Stefan Q.");
+    private static final String resultDir = "results";
+
+    @BeforeClass
+    public static void createDirectory() {
+        try {
+            new File(resultDir).mkdir();
+        } catch (SecurityException se) {
+            log.error("Could not create result directory " + resultDir, se);
+        }
+    }
 
     @Test
     public void complexHtmlListsShouldShowProperly() throws Exception {
@@ -22,7 +36,7 @@ public class ProtocolControllerTest {
 
         input = markPersons(input);
 
-        iTextile = new iTextile("results/demoComplex.pdf");
+        iTextile = new iTextile(resultDir + "/demoComplex.pdf");
         iTextile.startTable(1);
         iTextile.setTableColumnParser(0, new TextileDialect());
         iTextile.addTableRow(input);
@@ -34,7 +48,7 @@ public class ProtocolControllerTest {
     public void simpleHtmlListsShouldShowProperly() throws Exception {
         String input = "* one\r\n** two\r\n* three";
 
-        iTextile = new iTextile("results/demoSimple.pdf");
+        iTextile = new iTextile(resultDir + "/demoSimple.pdf");
         iTextile.startTable(1);
         iTextile.setTableColumnParser(0, new TextileDialect());
         iTextile.addTableRow(input);

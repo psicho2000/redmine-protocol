@@ -4,3 +4,6 @@ _Resources
 RemoteSystemsTempFiles
 /**/target/
 /**/.settings/
+/**/*.iml
+/**/.idea
+/**/redmine-protocol.log

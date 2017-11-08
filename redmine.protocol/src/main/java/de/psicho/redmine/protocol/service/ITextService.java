@@ -123,6 +123,7 @@ public class ITextService {
         iTextile.startTable(2, Rectangle.NO_BORDER);
         iTextile.setTableColumnFormat(0, TextProperty.builder().alignment(Element.ALIGN_LEFT).build());
         iTextile.setTableColumnFormat(1, TextProperty.builder().alignment(Element.ALIGN_RIGHT).build());
+        iTextile.setTableColumnWidth(0, 460);
         iTextile.addTableRow(title, protocolService.getProtocolValue(protocol, redmineProtocol.getFields().getNumber()));
         iTextile.endTable();
 

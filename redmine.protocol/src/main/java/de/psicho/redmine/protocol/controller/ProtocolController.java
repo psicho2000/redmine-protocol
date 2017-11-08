@@ -132,7 +132,6 @@ public class ProtocolController {
     }
 
     private String createResponse(ResponseInfo responseInfo, Exception thrownException, boolean autoclose) {
-
         StringBuffer result = new StringBuffer();
 
         if (thrownException != null) {
