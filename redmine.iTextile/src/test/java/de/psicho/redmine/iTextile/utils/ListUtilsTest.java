@@ -28,9 +28,9 @@ public class ListUtilsTest {
     private void performTest(String methodName) {
         String canonicalName = this.getClass().getCanonicalName();
         String currentPath = canonicalName.replaceAll("\\.", "/") + "/" + methodName;
-
         String input = ResourceUtils.readResource(currentPath + INPUT_SUFFIX);
         String expectedOutput = ResourceUtils.readResource(currentPath + OUTPUT_SUFFIX);
+
         String calculatedOutput = ListUtils.transformLists(input);
 
         assertThat(normalized(calculatedOutput), is(normalized(expectedOutput)));
