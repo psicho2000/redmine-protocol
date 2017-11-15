@@ -267,9 +267,9 @@ public class Table implements Command {
     /**
      * <p>Sets a header. If not set, header is inserted as first row. If already set, old header is overwritten.
      * 
+     * @param headerContents input for each header cell
      * @param formatting formatting of each cell of the header row
      * @param backgroundColor background color of the header row
-     * @param cells contents for each cell of the header row
      * @throws IllegalArgumentException if number of cells != number of columns
      */
     public void setHeader(List<String> headerContents, TextProperty formatting, BaseColor backgroundColor) {
