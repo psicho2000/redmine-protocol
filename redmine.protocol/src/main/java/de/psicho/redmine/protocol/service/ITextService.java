@@ -190,7 +190,7 @@ public class ITextService {
     }
 
     private String setIssueLinks(String content) {
-        Matcher matcher = Pattern.compile("#(\\d*)").matcher(content);
+        Matcher matcher = Pattern.compile("#(\\d+)").matcher(content);
         return matcher.replaceAll("\"#$1\":" + issueLinkPrefix + "$1");
     }
 }
