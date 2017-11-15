@@ -18,6 +18,16 @@ import de.psicho.redmine.iTextile.command.Table;
 import de.psicho.redmine.iTextile.command.TextProperty;
 import net.java.textilej.parser.markup.Dialect;
 
+/**
+ * <p>Main class for creating a document with contents in iTextile markup.</p>
+ * <p>There are currently two different element types of a document:
+ * - paragraph
+ * - table</p>
+ * <p>Usage:
+ * 1. Instantiate iTextile
+ * 2. Add any number of paragraphs and/or tables
+ * 3. Call createFile()</p>
+ */
 public class iTextile {
 
     private String filename;
@@ -31,7 +41,7 @@ public class iTextile {
     }
 
     /**
-     * <p>Prints text as new paragraph
+     * <p>Prints text as new paragraph.</p>
      * 
      * @param text the text to print
      * @param property printing properties
@@ -74,7 +84,7 @@ public class iTextile {
     }
 
     /**
-     * <p>Sets the formatting for the given column
+     * <p>Sets the formatting for the given column.</p>
      * 
      * @param colNum zero based number of the column
      * @param formatting formatting for the column
@@ -90,7 +100,7 @@ public class iTextile {
     }
 
     /**
-     * <p>Sets the parser dialect for the given column
+     * <p>Sets the parser dialect for the given column.</p>
      * 
      * @param colNum zero based number of the column
      * @param dialect dialect for the column
@@ -107,7 +117,7 @@ public class iTextile {
 
     /**
      * <p>Sets the width in pixels (based on 72 dpi) for the given column. If width is not defined for a column, remaining width
-     * (based on iText default width of 523 pixels) will be evenly distributed among the non defined columns.
+     * (based on iText default width of 523 pixels) will be evenly distributed among the non defined columns.</p>
      * 
      * @param colNum zero based number of the column
      * @param width width for the column
@@ -150,7 +160,7 @@ public class iTextile {
     }
 
     /**
-     * <p>Sets a header. If not set, header is inserted as first row. If already set, old header is overwritten.
+     * <p>Sets a header. If not set, header is inserted as first row. If already set, old header is overwritten.</p>
      * 
      * @param formatting formatting of each cell of the header row
      * @param backgroundColor background color of the header row
@@ -178,7 +188,7 @@ public class iTextile {
     }
 
     /**
-     * <p>Creates the pdf file and processes all provided Commands as input
+     * <p>Creates the pdf file and processes all provided Commands as input.</p>
      * 
      * @throws DocumentCreationException when file could not be created
      * @throws ProcessingException when input could not be processed
