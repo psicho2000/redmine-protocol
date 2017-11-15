@@ -73,6 +73,11 @@ public class ProtocolController {
     @Autowired
     private ITextService iTextService;
 
+    private static final String FOOTER =
+        "This software can be found at <a href=\"https://github.com/psicho2000/redmine-protocol\">GitHub</a> "
+            + "and is released under <a href=\"https://www.gnu.org/licenses/agpl-3.0.en.html\">AGPL 3.0</a>. "
+            + "It uses <a href=\"https://itextpdf.com/\">iText</a>.";
+
     @PostConstruct
     private void init() {
         redmineProtocol = appConfig.getRedmine().getProtocol();
@@ -85,11 +90,8 @@ public class ProtocolController {
             + "Given:<br /><ul><li>Open issue of Tracker \"Protokoll\"<li>Any topic"
             + "<li>Start date = day of the meeting (must be same when tickets notes have been updated)"
             + "<li>Non-empty fields Zugewiesen an, Andacht, Anwesend, Essen, Ort, Nummer, Moderation</ul>";
-        String footer = "This software can be found at <a href=\"https://github.com/psicho2000/redmine-protocol\">GitHub</a> "
-            + "and is released under <a href=\"https://www.gnu.org/licenses/agpl-3.0.en.html\">AGPL 3.0</a>. "
-            + "It uses <a href=\"https://itextpdf.com/\">iText</a>.";
         return format("<!DOCTYPE html><html><head><style>%s</style></head><body>%s</body><footer>%s</footer></html>", style, body,
-            footer);
+            FOOTER);
     }
 
     @RequestMapping("/protocol/{issueId}")
@@ -116,7 +118,7 @@ public class ProtocolController {
             Set<AttachedFile> attachedFiles = iTextService.processTop(topJournals);
 
             iTextService.endTable();
-            iTextService.finalizeITextile();
+            iTextService.finalizeITextile(FOOTER);
 
             if (autoclose) {
                 closeProtocol(protocol);

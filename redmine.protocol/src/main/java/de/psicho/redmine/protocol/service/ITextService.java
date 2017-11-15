@@ -56,7 +56,8 @@ public class ITextService {
         iTextile.endTable();
     }
 
-    public void finalizeITextile() throws DocumentCreationException {
+    public void finalizeITextile(String footer) throws DocumentCreationException {
+        iTextile.addParagraph(footer, TextProperty.builder().size(8.0f).style(Font.NORMAL).color(BaseColor.DARK_GRAY).build());
         iTextile.createFile();
     }
 
