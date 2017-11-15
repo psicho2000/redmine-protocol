@@ -1,6 +1,7 @@
 package de.psicho.redmine.protocol.service;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.Rectangle;
@@ -56,8 +58,8 @@ public class ITextService {
         iTextile.endTable();
     }
 
-    public void finalizeITextile(String footer) throws DocumentCreationException {
-        iTextile.addParagraph(footer, TextProperty.builder().size(8.0f).style(Font.NORMAL).color(BaseColor.DARK_GRAY).build());
+    public void finalizeITextile(String footer) throws DocumentCreationException, FileNotFoundException, DocumentException {
+        iTextile.setFooter(footer);
         iTextile.createFile();
     }
 

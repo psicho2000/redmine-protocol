@@ -35,6 +35,7 @@ public class iTextile {
     private String filename;
     private List<Command> commands;
     private Table table;
+    private String documentFooter;
 
     public iTextile(String filename) {
         this.filename = filename;
@@ -206,18 +207,34 @@ public class iTextile {
     }
 
     /**
+     * <p>Sets a text as document footer at bottom of last page.</p>
+     * 
+     * @param footerText the text to print at the end; {@code null}: do not print footer
+     */
+    public void setFooter(String footerText) {
+        documentFooter = footerText;
+    }
+
+    /**
      * <p>Creates the pdf file and processes all provided Commands as input.</p>
      * 
      * @throws DocumentCreationException when file could not be created
      * @throws ProcessingException when input could not be processed
      */
-    public void createFile() throws DocumentCreationException {
+    public void createFile() throws DocumentCreationException, FileNotFoundException, DocumentException {
         Document document = new Document();
+        PdfWriter writer;
         try {
-            PdfWriter.getInstance(document, new FileOutputStream(filename));
+            writer = PdfWriter.getInstance(document, new FileOutputStream(filename));
         } catch (FileNotFoundException | DocumentException ex) {
             throw new DocumentCreationException(ex);
         }
+
+        if (documentFooter != null) {
+            DocumentFooter event = new DocumentFooter(documentFooter);
+            writer.setPageEvent(event);
+        }
+
         document.open();
         commands.forEach(command -> command.process(document));
         document.close();

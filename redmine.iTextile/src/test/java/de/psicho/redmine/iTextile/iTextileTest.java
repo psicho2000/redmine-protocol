@@ -22,24 +22,32 @@ public class iTextileTest {
     }
 
     @Test
-    public void createParagraph() throws DocumentCreationException {
+    public void createParagraph() throws Exception {
         iTextile iTextile = new iTextile("results/paragraphWithFormat.pdf");
         iTextile.addParagraph("+My text+\n\n* Element", TextProperty.builder().build());
         iTextile.createFile();
     }
 
     @Test
-    public void createParagraphWithDialect() throws DocumentCreationException {
+    public void createParagraphWithDialect() throws Exception {
         iTextile iTextile = new iTextile("results/paragraphWithDialect.pdf");
         iTextile.addParagraph("+My text+\n\n* Element", new TextileDialect());
         iTextile.createFile();
     }
 
     @Test
-    public void createParagraphWithHeading() throws DocumentCreationException {
+    public void createParagraphWithHeading() throws Exception {
         iTextile iTextile = new iTextile("results/paragraphWithHeading.pdf");
         iTextile.addParagraph("h1. Header\n\nh2. Sub-Header\n\nh3. Level 3 Header\n\nContent\n\n* *bold element*",
             new TextileDialect());
+        iTextile.createFile();
+    }
+
+    @Test
+    public void createDocumentWithFooter() throws Exception {
+        iTextile iTextile = new iTextile("results/documentWithFooter.pdf");
+        iTextile.addParagraph("Some text", TextProperty.builder().build());
+        iTextile.setFooter("This is my footer text");
         iTextile.createFile();
     }
 }
