@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.itextpdf.text.BaseColor;
@@ -32,20 +31,23 @@ import de.psicho.redmine.protocol.config.Protocol;
 import de.psicho.redmine.protocol.model.AttachedFile;
 import de.psicho.redmine.protocol.model.IssueJournalWrapper;
 import de.psicho.redmine.protocol.utils.DateUtils;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import net.java.textilej.parser.markup.textile.TextileDialect;
 
 @Component
+@RequiredArgsConstructor
 public class ITextService {
 
-    @Autowired
+    @NonNull
     private AppConfig appConfig;
 
-    @Autowired
+    @NonNull
     private IssueHandler issueHandler;
 
     private String issueLinkPrefix;
 
-    @Autowired
+    @NonNull
     private ProtocolService protocolService;
 
     private Protocol redmineProtocol;
@@ -97,7 +99,7 @@ public class ITextService {
 
     public void startITextile(String filename) {
         File file = new File(filename);
-        file.getParentFile().mkdirs();
+        boolean result = file.getParentFile().mkdirs();
         iTextile = new iTextile(filename);
     }
 
@@ -120,9 +122,8 @@ public class ITextService {
         heading();
         Date protocolStartDate = protocol.getStartDate();
 
-        String title =
-            new StringBuilder().append("Gemeinderat am ").append(DateUtils.dateToGer(protocolStartDate)).append(" bei ")
-                .append(protocolService.getProtocolValue(protocol, redmineProtocol.getFields().getLocation())).toString();
+        String title = "Gemeinderat am " + DateUtils.dateToGer(protocolStartDate) + " bei "
+            + protocolService.getProtocolValue(protocol, redmineProtocol.getFields().getLocation());
         iTextile.startTable(2, Rectangle.NO_BORDER);
         iTextile.setTableColumnFormat(0, TextProperty.builder().alignment(Element.ALIGN_LEFT).build());
         iTextile.setTableColumnFormat(1, TextProperty.builder().alignment(Element.ALIGN_RIGHT).build());
@@ -130,27 +131,12 @@ public class ITextService {
         iTextile.addTableRow(title, protocolService.getProtocolValue(protocol, redmineProtocol.getFields().getNumber()));
         iTextile.endTable();
 
-        StringBuilder meal = new StringBuilder();
-        meal.append("Essen: ");
-        meal.append(protocolService.getProtocolValue(protocol, redmineProtocol.getFields().getMeal()));
-        paragraph(meal.toString());
-
-        StringBuilder members = new StringBuilder();
-        members.append("Anwesend: ");
-        members.append(protocolService.getProtocolValue(protocol, redmineProtocol.getFields().getParticipants()));
-        paragraph(members.toString());
+        paragraph("Essen: " + protocolService.getProtocolValue(protocol, redmineProtocol.getFields().getMeal()));
+        paragraph("Anwesend: " + protocolService.getProtocolValue(protocol, redmineProtocol.getFields().getParticipants()));
     }
 
     private String appendJournal(IssueJournalWrapper status) {
-        StringBuilder statusContent = new StringBuilder();
-        statusContent.append("#");
-        statusContent.append(status.getIssueId());
-        statusContent.append(" (");
-        statusContent.append(status.getIssueSubject());
-        statusContent.append(")");
-        statusContent.append("\r\n");
-        statusContent.append(status.getJournal().getNotes());
-        return statusContent.toString();
+        return "#" + status.getIssueId() + " (" + status.getIssueSubject() + ")" + "\r\n" + status.getJournal().getNotes();
     }
 
     private void heading() {

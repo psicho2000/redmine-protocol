@@ -2,21 +2,23 @@ package de.psicho.redmine.protocol.dao;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.stereotype.Repository;
 
 import de.psicho.redmine.protocol.api.JournalHandler;
 import de.psicho.redmine.protocol.model.IssueJournalWrapper;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 @Repository
+@RequiredArgsConstructor
 public class IssueDao {
 
-    @Autowired
+    @NonNull
     private JdbcTemplate jdbcTemplate;
 
-    @Autowired
+    @NonNull
     private JournalHandler journalHandler;
 
     public List<IssueJournalWrapper> findJournals(String tracker, String changeDate) {

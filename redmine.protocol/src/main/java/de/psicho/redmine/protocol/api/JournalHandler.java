@@ -3,7 +3,6 @@ package de.psicho.redmine.protocol.api;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.taskadapter.redmineapi.Include;
@@ -12,11 +11,14 @@ import com.taskadapter.redmineapi.bean.Journal;
 import com.taskadapter.redmineapi.bean.JournalFactory;
 
 import de.psicho.redmine.protocol.model.IssueJournalWrapper;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 @Component
+@RequiredArgsConstructor
 public class JournalHandler {
 
-    @Autowired
+    @NonNull
     private IssueHandler issueHandler;
 
     public IssueJournalWrapper retrieveJournal(ResultSet rs, int rownum) {

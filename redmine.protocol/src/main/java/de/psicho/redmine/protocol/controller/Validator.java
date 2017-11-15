@@ -3,7 +3,6 @@ package de.psicho.redmine.protocol.controller;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.taskadapter.redmineapi.bean.Issue;
@@ -12,14 +11,17 @@ import de.psicho.redmine.protocol.api.IssueHandler;
 import de.psicho.redmine.protocol.config.AppConfig;
 import de.psicho.redmine.protocol.config.Protocol;
 import de.psicho.redmine.protocol.model.Validation;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 @Component
+@RequiredArgsConstructor
 public class Validator {
 
-    @Autowired
+    @NonNull
     private AppConfig appConfig;
 
-    @Autowired
+    @NonNull
     private IssueHandler issueHandler;
 
     private Validation validateIssueId(String issueId) {

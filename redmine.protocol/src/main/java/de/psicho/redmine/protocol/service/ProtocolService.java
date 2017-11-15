@@ -1,12 +1,7 @@
 package de.psicho.redmine.protocol.service;
 
 import java.util.Date;
-import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.taskadapter.redmineapi.bean.CustomField;
@@ -14,17 +9,19 @@ import com.taskadapter.redmineapi.bean.Issue;
 import com.taskadapter.redmineapi.bean.User;
 
 import de.psicho.redmine.protocol.api.UserHandler;
-import de.psicho.redmine.protocol.model.IssueJournalWrapper;
 import de.psicho.redmine.protocol.utils.DateUtils;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 @Component
+@RequiredArgsConstructor
 public class ProtocolService {
 
     private final static String PROTOCOL_PATH = "results";
     private final static String PROTOCOL_FILE_PREFIX = "Gemeinderat ";
     private final static String PDF_SUFFIX = ".pdf";
 
-    @Autowired
+    @NonNull
     private UserHandler userHandler;
 
     public static String getProtocolFileName(Date protocolStartDate) {

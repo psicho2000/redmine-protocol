@@ -1,6 +1,5 @@
 package de.psicho.redmine.protocol.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -10,13 +9,16 @@ import de.psicho.redmine.protocol.api.IssueHandler;
 import de.psicho.redmine.protocol.api.RedmineHandler;
 import de.psicho.redmine.protocol.api.UserHandler;
 import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @Getter
 @EnableJpaRepositories(basePackages = "de.psicho.redmine.protocol.repository")
+@RequiredArgsConstructor
 public class AppConfig {
 
-    @Autowired
+    @NonNull
     private RedmineConfigurer redmine;
 
     @Bean
