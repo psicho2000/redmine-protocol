@@ -3,6 +3,7 @@ package de.psicho.redmine.protocol.api;
 import java.io.File;
 import java.io.IOException;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.taskadapter.redmineapi.AttachmentManager;
@@ -11,7 +12,6 @@ import com.taskadapter.redmineapi.bean.Attachment;
 
 import de.psicho.redmine.protocol.db.model.DbAttachment;
 import de.psicho.redmine.protocol.repository.AttachmentRepository;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @Component
@@ -22,7 +22,7 @@ public class AttachmentHandler {
 
     private AttachmentManager attachmentManager = null;
 
-    @NonNull
+    @Autowired
     private AttachmentRepository attachmentRepository;
 
     public AttachmentHandler(RedmineHandler redmineHandler) {
