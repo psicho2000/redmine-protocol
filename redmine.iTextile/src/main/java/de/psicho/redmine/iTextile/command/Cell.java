@@ -9,8 +9,6 @@ import net.java.textilej.parser.markup.Dialect;
 @AllArgsConstructor
 public class Cell {
 
-    // TODO this can be generalized together with fields of {@link Paragraph}
-
     @NonNull
     String content;
     TextProperty formatting;
