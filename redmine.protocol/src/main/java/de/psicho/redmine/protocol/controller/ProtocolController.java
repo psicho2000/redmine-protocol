@@ -2,6 +2,7 @@ package de.psicho.redmine.protocol.controller;
 
 import static de.psicho.redmine.protocol.service.ProtocolService.getProtocolFileName;
 import static de.psicho.redmine.protocol.service.ProtocolService.getProtocolPath;
+import static java.lang.String.format;
 
 import java.io.File;
 import java.util.Date;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.taskadapter.redmineapi.bean.Issue;
 import com.taskadapter.redmineapi.bean.Journal;
 
+import de.psicho.redmine.iTextile.utils.ResourceUtils;
 import de.psicho.redmine.protocol.api.AttachmentHandler;
 import de.psicho.redmine.protocol.api.IssueHandler;
 import de.psicho.redmine.protocol.config.AppConfig;
@@ -74,6 +76,20 @@ public class ProtocolController {
     @PostConstruct
     private void init() {
         redmineProtocol = appConfig.getRedmine().getProtocol();
+    }
+
+    @RequestMapping("/")
+    public String info() {
+        String style = ResourceUtils.readResource("style.css");
+        String body = "Create protocol for a given Redmine protocol issue.<br /><br />" + "Usage: /protocol/{protocolId}<br />"
+            + "Given:<br /><ul><li>Open issue of Tracker \"Protokoll\"<li>Any topic"
+            + "<li>Start date = day of the meeting (must be same when tickets notes have been updated)"
+            + "<li>Non-empty fields Zugewiesen an, Andacht, Anwesend, Essen, Ort, Nummer, Moderation</ul>";
+        String footer = "This software can be found at <a href=\"https://github.com/psicho2000/redmine-protocol\">GitHub</a> "
+            + "and is released under <a href=\"https://www.gnu.org/licenses/agpl-3.0.en.html\">AGPL 3.0</a>. "
+            + "It uses <a href=\"https://itextpdf.com/\">iText</a>.";
+        return format("<!DOCTYPE html><html><head><style>%s</style></head><body>%s</body><footer>%s</footer></html>", style, body,
+            footer);
     }
 
     @RequestMapping("/protocol/{issueId}")
@@ -185,12 +201,11 @@ public class ProtocolController {
         try {
             String dateGer = DateUtils.dateToGer(protocolStartDate);
             String linkToProtocol = appConfig.getRedmine().getIssues().getLink() + protocol.getId();
-            linkToProtocol = String.format("<a href=\"%s\">%s</a>", linkToProtocol, linkToProtocol);
+            linkToProtocol = format("<a href=\"%s\">%s</a>", linkToProtocol, linkToProtocol);
             helper = new MimeMessageHelper(message, true);
             helper.setTo(mailConfig.getRecipient());
-            helper.setSubject(String.format(mailConfig.getSubject(), dateGer));
-            helper.setText(String.format("<html><body>" + mailConfig.getBody() + "</body></html>", dateGer, linkToProtocol),
-                true);
+            helper.setSubject(format(mailConfig.getSubject(), dateGer));
+            helper.setText(format("<html><body>" + mailConfig.getBody() + "</body></html>", dateGer, linkToProtocol), true);
             helper.addAttachment(getProtocolFileName(protocolStartDate), file);
 
             for (AttachedFile attachedFile : attachedFiles) {
