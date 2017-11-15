@@ -13,7 +13,7 @@
 # global variables
 path="/home/markus"
 app="redmine.protocol"
-version="1.1.2"
+version="1.1.3"
 profile="remote"
 
 # global functions
