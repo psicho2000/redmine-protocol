@@ -19,14 +19,16 @@ import de.psicho.redmine.iTextile.command.TextProperty;
 import net.java.textilej.parser.markup.Dialect;
 
 /**
- * <p>Main class for creating a document with contents in iTextile markup.</p>
+ * <p>Main class for creating a document with contents markup.</p>
  * <p>There are currently two different element types of a document:
  * - paragraph
  * - table</p>
  * <p>Usage:
  * 1. Instantiate iTextile
- * 2. Add any number of paragraphs and/or tables
- * 3. Call createFile()</p>
+ * 2. Add any number of paragraphs and/or tables.
+ * 3. For each paragraph and/or cell column, optionally choose a markup dialect. Currently supported: TextileDialect,
+ * ConfluenceDialect, MediaWikiDialect, TracWikiDialect
+ * 4. Call createFile()</p>
  */
 public class iTextile {
 
@@ -41,7 +43,7 @@ public class iTextile {
     }
 
     /**
-     * <p>Prints text as new paragraph.</p>
+     * <p>Prints text as new paragraph using given formatting.</p>
      * 
      * @param text the text to print
      * @param property printing properties
@@ -53,6 +55,22 @@ public class iTextile {
         }
 
         Paragraph paragraph = new Paragraph(text, property);
+        commands.add(paragraph);
+    }
+
+    /**
+     * <p>Prints text as new paragraph using given dialect.</p>
+     *
+     * @param text the text to print
+     * @param dialect dialect for interpreting text
+     * @throws IllegalStateException if in table mode
+     */
+    public void addParagraph(String text, Dialect dialect) {
+        if (isTableMode()) {
+            throw new IllegalStateException("Cannot add paragraph in table mode.");
+        }
+
+        Paragraph paragraph = new Paragraph(text, dialect);
         commands.add(paragraph);
     }
 

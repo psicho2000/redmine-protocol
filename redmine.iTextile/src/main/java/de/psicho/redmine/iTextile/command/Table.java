@@ -1,5 +1,7 @@
 package de.psicho.redmine.iTextile.command;
 
+import static de.psicho.redmine.iTextile.command.Constants.STYLESHEET;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -35,7 +37,6 @@ import net.java.textilej.parser.markup.Dialect;
  */
 public class Table implements Command {
 
-    private static final String STYLESHEET = "style.css";
     private static final float A4_WIDTH = 523f;
     private int columns;
     private LinkedList<Row> rows;
@@ -153,9 +154,8 @@ public class Table implements Command {
         // "Nested lists don't work in a cell" (http://developers.itextpdf.com/de/node/2243) -> we have to simulate this
         htmlContent = ListUtils.transformLists(htmlContent);
         String css = ResourceUtils.readResource(STYLESHEET);
-        ElementList list;
         try {
-            list = XMLWorkerHelper.parseToElementList(htmlContent, css);
+            ElementList list = XMLWorkerHelper.parseToElementList(htmlContent, css);
             for (Element element : list) {
                 pdfCell.addElement(element);
             }
