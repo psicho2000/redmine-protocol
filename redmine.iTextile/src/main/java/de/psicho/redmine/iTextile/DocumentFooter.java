@@ -21,6 +21,7 @@ public class DocumentFooter extends PdfPageEventHelper {
     @NonNull
     private String footerText;
 
+    @Override
     public void onEndPage(PdfWriter writer, Document document) {
         PdfContentByte cb = writer.getDirectContent();
         Phrase footer = new Phrase(footerText, footerFont);

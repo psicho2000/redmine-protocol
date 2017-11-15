@@ -15,7 +15,7 @@ public class iTextileTest {
     @BeforeClass
     public static void createDirectory() {
         try {
-            new File(resultDir).mkdir();
+            boolean result = new File(resultDir).mkdir();
         } catch (SecurityException se) {
             throw new RuntimeException("Could not create result directory " + resultDir, se);
         }
@@ -47,7 +47,8 @@ public class iTextileTest {
     public void createDocumentWithFooter() throws Exception {
         iTextile iTextile = new iTextile("results/documentWithFooter.pdf");
         iTextile.addParagraph("Some text", TextProperty.builder().build());
-        iTextile.setFooter("This is my footer text");
+        iTextile.setFooter(
+            "Created by code at https://github.com/psicho2000/redmine-protocol using iText and released under AGPL 3.0.");
         iTextile.createFile();
     }
 }

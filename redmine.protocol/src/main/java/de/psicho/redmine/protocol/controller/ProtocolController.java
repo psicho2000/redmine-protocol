@@ -16,7 +16,6 @@ import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -41,42 +40,43 @@ import de.psicho.redmine.protocol.model.IssueJournalWrapper;
 import de.psicho.redmine.protocol.service.ITextService;
 import de.psicho.redmine.protocol.service.ProtocolService;
 import de.psicho.redmine.protocol.utils.DateUtils;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Slf4j
+@RequiredArgsConstructor
 public class ProtocolController {
 
-    @Autowired
+    @NonNull
     private ProtocolService protocolService;
 
-    @Autowired
+    @NonNull
     private JavaMailSender mailSender;
 
-    @Autowired
+    @NonNull
     private AttachmentHandler attachmentHandler;
 
-    @Autowired
+    @NonNull
     private IssueHandler issueHandler;
 
-    @Autowired
+    @NonNull
     private IssueDao issueDao;
 
-    @Autowired
+    @NonNull
     private AppConfig appConfig;
+
+    @NonNull
+    private Validator validator;
+
+    @NonNull
+    private ITextService iTextService;
 
     private Protocol redmineProtocol;
 
-    @Autowired
-    private Validator validator;
-
-    @Autowired
-    private ITextService iTextService;
-
     private static final String FOOTER =
-        "This software can be found at <a href=\"https://github.com/psicho2000/redmine-protocol\">GitHub</a> "
-            + "and is released under <a href=\"https://www.gnu.org/licenses/agpl-3.0.en.html\">AGPL 3.0</a>. "
-            + "It uses <a href=\"https://itextpdf.com/\">iText</a>.";
+        "Created by code at https://github.com/psicho2000/redmine-protocol using iText and released under AGPL 3.0.";
 
     @PostConstruct
     private void init() {
