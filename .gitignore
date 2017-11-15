@@ -7,3 +7,4 @@ RemoteSystemsTempFiles
 /**/*.iml
 /**/.idea
 /**/redmine-protocol.log
+/redmine.protocol/src/main/resources/application-development.yml
