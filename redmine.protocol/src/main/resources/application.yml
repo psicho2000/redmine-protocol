@@ -39,6 +39,7 @@ redmine:
       - Markus
       - Stefan E.
       - Stefan Q.
+      - Paul
     fields:
       number: Nummer
       participants: Anwesend
