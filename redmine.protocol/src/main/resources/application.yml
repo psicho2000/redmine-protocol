@@ -35,11 +35,10 @@ redmine:
     members:
       - Alberto
       - Ann
-      - Anne E.
+      - Anne
       - Markus
-      - Stefan E.
-      - Stefan Q.
       - Paul
+      - Stefan
     fields:
       number: Nummer
       participants: Anwesend
