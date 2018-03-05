@@ -25,6 +25,7 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.tool.xml.ElementList;
 import com.itextpdf.tool.xml.XMLWorkerHelper;
+import com.itextpdf.tool.xml.exceptions.RuntimeWorkerException;
 
 import de.psicho.redmine.iTextile.ProcessingException;
 import de.psicho.redmine.iTextile.utils.ListUtils;
@@ -159,9 +160,10 @@ public class Table implements Command {
             for (Element element : list) {
                 pdfCell.addElement(element);
             }
-        } catch (IOException ex) {
-            throw new ProcessingException(ex);
+        } catch (IOException | RuntimeWorkerException ex) {
+            throw new ProcessingException("Could not process cell with content " + cell.getContent(), ex);
         }
+
         return pdfCell;
     }
 
