@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.psicho</groupId>
     <artifactId>redmine.iTextile</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <name>iTextile</name>
     <description>Converts textile to pdf using iText and textile-j</description>
 

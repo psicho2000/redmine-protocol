@@ -5,7 +5,7 @@
 # Start, stop, restart application and show it's status
 #
 # author: Markus Meier
-# date:   2017-06-29
+# date:   2018-03-05
 # helpful alias:
 #     alias protocol=/path/to/this/script.sh
 #######################################################
@@ -13,7 +13,7 @@
 # global variables
 path="/home/markus"
 app="redmine.protocol"
-version="1.1.3"
+version="1.1.4"
 profile="remote"
 
 # global functions
