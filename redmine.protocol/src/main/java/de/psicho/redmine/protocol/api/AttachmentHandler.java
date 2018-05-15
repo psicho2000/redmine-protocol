@@ -1,5 +1,7 @@
 package de.psicho.redmine.protocol.api;
 
+import static java.lang.String.format;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -12,10 +14,8 @@ import com.taskadapter.redmineapi.bean.Attachment;
 
 import de.psicho.redmine.protocol.db.model.DbAttachment;
 import de.psicho.redmine.protocol.repository.AttachmentRepository;
-import lombok.RequiredArgsConstructor;
 
 @Component
-@RequiredArgsConstructor
 public class AttachmentHandler {
 
     private static final String CONTENT_TYPE = "application/pdf";
@@ -40,6 +40,10 @@ public class AttachmentHandler {
     public byte[] getAttachment(Integer issueId, String attachmentFileName) {
         try {
             DbAttachment dbAttachment = attachmentRepository.findByContainerIdAndFilename(issueId, attachmentFileName);
+            if (dbAttachment == null) {
+                throw new IllegalArgumentException(
+                    format("Attachment not found for issue id %d and filename '%s'.", issueId, attachmentFileName));
+            }
             Attachment attachment = attachmentManager.getAttachmentById(dbAttachment.getId());
             return attachmentManager.downloadAttachmentContent(attachment);
         } catch (RedmineException ex) {
