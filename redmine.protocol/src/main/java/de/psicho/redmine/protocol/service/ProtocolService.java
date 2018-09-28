@@ -9,6 +9,7 @@ import com.taskadapter.redmineapi.bean.Issue;
 import com.taskadapter.redmineapi.bean.User;
 
 import de.psicho.redmine.protocol.api.UserHandler;
+import de.psicho.redmine.protocol.config.AppConfig;
 import de.psicho.redmine.protocol.utils.DateUtils;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,9 @@ public class ProtocolService {
     private final static String PROTOCOL_PATH = "results";
     private final static String PROTOCOL_FILE_PREFIX = "Gemeinderat ";
     private final static String PDF_SUFFIX = ".pdf";
+
+    @NonNull
+    private AppConfig appConfig;
 
     @NonNull
     private UserHandler userHandler;
@@ -48,6 +52,10 @@ public class ProtocolService {
         if (user == null) {
             throw new RuntimeException(String.format("Der User mit der Id %d konnte nicht gefunden werden.", userId));
         }
-        return user.getFirstName() + " " + user.getLastName().substring(0, 1) + ".";
+        String name = user.getFirstName();
+        if (appConfig.getRedmine().getProtocol().getSwitches().getPrintLastNameInitial()) {
+            name += " " + user.getLastName().substring(0, 1) + ".";
+        }
+        return name;
     }
 }

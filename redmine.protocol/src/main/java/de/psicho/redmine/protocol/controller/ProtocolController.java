@@ -140,7 +140,7 @@ public class ProtocolController {
             }
 
             responseInfo = ResponseInfo.builder().issueId(issueId).isoDate(isoDate).statusJournals(statusJournals)
-                .topJournals(topJournals).build();
+                .topJournals(topJournals).attachedFiles(attachedFiles).build();
         } catch (ValidationException | IssueProcessingException ex) {
             exception = ex;
             log.error(ex.getMessage());
@@ -214,6 +214,7 @@ public class ProtocolController {
             result.append("<p><a href=\"");
             result.append(path);
             result.append("/preview\">PDF Vorschau</a></p>");
+            result.append(showAttachedFiles(responseInfo.getAttachedFiles()));
             result.append("<p><br/>Protokoll wurde ");
             result.append(autoclose ? "<strong>geschlossen</strong>." : "<strong>nicht</strong> geschlossen.");
             if (!autoclose) {
@@ -223,6 +224,14 @@ public class ProtocolController {
         }
 
         return wrapHtml(result.toString());
+    }
+
+    private String showAttachedFiles(Set<AttachedFile> attachedFiles) {
+        for (AttachedFile attachedFile : attachedFiles) {
+            byte[] binaryAttachment = attachmentHandler.getAttachment(attachedFile.getIssueId(), attachedFile.getFileName());
+            ByteArrayResource byteArrayResource = new ByteArrayResource(binaryAttachment);
+        }
+        return null;
     }
 
     private void closeProtocol(Issue protocol) {

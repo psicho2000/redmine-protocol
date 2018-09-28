@@ -46,6 +46,8 @@ redmine:
       location: Ort
       moderation: Moderation
       devotion: Andacht
+    switches:
+      printLastNameInitial: false
   mail:
     recipient: gemeinderat@lifeline-herne.de
     subject: Protokoll vom Gemeinderat am %s

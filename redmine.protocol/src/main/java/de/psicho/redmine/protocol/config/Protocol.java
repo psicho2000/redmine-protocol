@@ -13,4 +13,5 @@ public class Protocol {
     private String name;
     private String closed;
     private Fields fields;
+    private Switches switches;
 }
