@@ -1,5 +1,7 @@
 package de.psicho.redmine.protocol.controller;
 
+import static java.lang.String.format;
+
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -24,6 +26,9 @@ public class Validator {
     @NonNull
     private IssueHandler issueHandler;
 
+    @NonNull
+    private LinkUtils linkUtils;
+
     private Validation validateIssueId(String issueId) {
         Validation validation = new Validation();
 
@@ -38,12 +43,11 @@ public class Validator {
     }
 
     private Validation validateProtocol(Issue protocol) {
-        Validation validation = new Validation();
+        Validation validation = new Validation(linkUtils.getShortLink(protocol.getId()));
         Protocol redmineProtocol = appConfig.getRedmine().getProtocol();
 
         if (!protocol.getTracker().getName().equals(redmineProtocol.getName())) {
-            validation.add(String.format("Das Ticket '%d' ist kein Protokoll (Tracker = '%s').", protocol.getId(),
-                redmineProtocol.getName()));
+            validation.add(format("Das Ticket ist kein Protokoll (Tracker muss '%s' sein).", redmineProtocol.getName()));
             return validation;
         }
 
@@ -63,7 +67,7 @@ public class Validator {
         for (String field : mandatoryFields) {
             if (protocol.getCustomFieldByName(field) == null
                 || StringUtils.isBlank(protocol.getCustomFieldByName(field).getValue())) {
-                validation.add(String.format("Feld '%s' muss angegeben werden.", field));
+                validation.add(format("Feld '%s' muss angegeben werden.", field));
             }
         }
 
@@ -78,7 +82,7 @@ public class Validator {
 
         Issue protocol = openTicket(issueId);
         if (protocol == null) {
-            throw new ValidationException(String.format("Ticket '%s' konnte nicht gefunden werden.", issueId));
+            throw new ValidationException(format("Ticket '%s' konnte nicht gefunden werden.", issueId));
         }
 
         validation = validateProtocol(protocol);

@@ -73,10 +73,13 @@ public class ProtocolController {
     @NonNull
     private ITextService iTextService;
 
+    @NonNull
+    private LinkUtils linkUtils;
+
     private Protocol redmineProtocol;
 
     private static final String FOOTER =
-        "Created by code at https://github.com/psicho2000/redmine-protocol using iText and released under AGPL 3.0.";
+        "Generiert mit Code von https://github.com/psicho2000/redmine-protocol. Nutzt iText, lizensiert unter AGPL 3.0.";
 
     @PostConstruct
     private void init() {
@@ -85,13 +88,13 @@ public class ProtocolController {
 
     @RequestMapping("/")
     public String info() {
-        String style = ResourceUtils.readResource("style.css");
-        String body = "Create protocol for a given Redmine protocol issue.<br /><br />" + "Usage: /protocol/{protocolId}<br />"
-            + "Given:<br /><ul><li>Open issue of Tracker \"Protokoll\"<li>Any topic"
-            + "<li>Start date = day of the meeting (must be same when tickets notes have been updated)"
-            + "<li>Non-empty fields Zugewiesen an, Andacht, Anwesend, Essen, Ort, Nummer, Moderation</ul>";
-        return format("<!DOCTYPE html><html><head><style>%s</style></head><body>%s</body><footer>%s</footer></html>", style, body,
-            FOOTER);
+        // FIXME read tracker type and mandatory from configuration
+        String body =
+            "Erzeugt ein Protokoll für ein Redmine Protokoll-Ticket.<br /><br />" + "Verwendung: /protocol/{protocolId}<br />"
+                + "Gegeben:<br /><ul><li>Offenes Ticket vom Tracker \"Protokoll\"<li>Titel beliebig"
+                + "<li>Beginn Datum = Tag des Treffens (muss übereinstimmen mit dem Zeitstempel der Ticket-Notizen)"
+                + "<li>Pflichtfelder: Zugewiesen an, Andacht, Anwesend, Essen, Ort, Nummer, Moderation</ul>";
+        return wrapHtml(body);
     }
 
     @RequestMapping("/protocol/{issueId}")
@@ -127,6 +130,9 @@ public class ProtocolController {
 
             responseInfo = ResponseInfo.builder().issueId(issueId).isoDate(isoDate).statusJournals(statusJournals)
                 .topJournals(topJournals).build();
+        } catch (ValidationException ex) {
+            exception = ex;
+            log.error(ex.getMessage());
         } catch (Exception ex) {
             exception = ex;
             log.error(ExceptionUtils.getStackTrace(ex));
@@ -152,7 +158,9 @@ public class ProtocolController {
     private String createResponse(ResponseInfo responseInfo, Exception thrownException, boolean autoclose) {
         StringBuffer result = new StringBuffer();
 
-        if (thrownException != null) {
+        if (thrownException instanceof ValidationException) {
+            result.append(thrownException.getMessage());
+        } else if (thrownException != null) {
             result.append("<pre>");
             result.append(ExceptionUtils.getStackTrace(thrownException));
             result.append("</pre>");
@@ -160,9 +168,9 @@ public class ProtocolController {
             Consumer<IssueJournalWrapper> issueInfoAppender =
                 issue -> result.append("<br>").append(issue.getIssueId()).append(": ").append(issue.getIssueSubject());
 
-            result.append("Creating protocol for id: ");
+            result.append("Erzeuge Protokoll für Ticket: ");
             result.append(responseInfo.getIssueId());
-            result.append("<br/>Querying for date ");
+            result.append("<br/>am ");
             result.append(responseInfo.getIsoDate());
             result.append("<br/><h3>StatusItems: ");
             result.append(responseInfo.getStatusJournals().size());
@@ -172,14 +180,14 @@ public class ProtocolController {
             result.append(responseInfo.getTopJournals().size());
             result.append("</h3> ");
             responseInfo.getTopJournals().forEach(issueInfoAppender);
-            result.append("<p><br/>Protocol has ");
-            result.append(autoclose ? "been <strong>closed</strong>." : "<strong>not</strong> been closed.");
+            result.append("<p><br/>Protokoll wurde ");
+            result.append(autoclose ? "<strong>geschlossen</strong>." : "<strong>nicht</strong> geschlossen.");
             if (!autoclose) {
-                result.append("<br/>Close by appending: ?autoclose=1");
+                result.append("<br/>Protokoll schließen mit Parameter: autoclose=1");
             }
         }
 
-        return result.toString();
+        return wrapHtml(result.toString());
     }
 
     private void closeProtocol(Issue protocol) {
@@ -202,8 +210,7 @@ public class ProtocolController {
         MimeMessageHelper helper;
         try {
             String dateGer = DateUtils.dateToGer(protocolStartDate);
-            String linkToProtocol = appConfig.getRedmine().getIssues().getLink() + protocol.getId();
-            linkToProtocol = format("<a href=\"%s\">%s</a>", linkToProtocol, linkToProtocol);
+            String linkToProtocol = linkUtils.getLongLink(protocol.getId());
             helper = new MimeMessageHelper(message, true);
             helper.setTo(mailConfig.getRecipient());
             helper.setSubject(format(mailConfig.getSubject(), dateGer));
@@ -221,4 +228,11 @@ public class ProtocolController {
 
         mailSender.send(message);
     }
+
+    private String wrapHtml(String body) {
+        String style = ResourceUtils.readResource("style.css");
+        return format("<!DOCTYPE html><html><head><style>%s</style></head><body>%s</body><footer>%s</footer></html>", style, body,
+            FOOTER);
+    }
+
 }
