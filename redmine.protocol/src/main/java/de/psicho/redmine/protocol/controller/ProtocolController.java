@@ -99,12 +99,12 @@ public class ProtocolController {
 
     @RequestMapping("/")
     public String info() {
-        // FIXME read tracker type and mandatory fields from configuration
-        String body =
-            "Erzeugt ein Protokoll für ein Redmine Protokoll-Ticket.<br /><br />" + "Verwendung: /protocol/{protocolId}<br />"
-                + "Gegeben:<br /><ul><li>Offenes Ticket vom Tracker \"Protokoll\"<li>Titel beliebig"
-                + "<li>Beginn Datum = Tag des Treffens (muss übereinstimmen mit dem Zeitstempel der Ticket-Notizen)"
-                + "<li>Pflichtfelder: Zugewiesen an, Andacht, Anwesend, Essen, Ort, Nummer, Moderation</ul>";
+        String body = "Erzeugt ein Protokoll für ein Redmine Protokoll-Ticket.<br /><br />"
+            + "Verwendung: /protocol/{protocolId}<br />" + "Gegeben:<br /><ul><li>Offenes Ticket vom Tracker \""
+            + appConfig.getRedmine().getProtocol().getName() + "\"<li>Titel beliebig"
+            + "<li>Beginn Datum = Tag des Treffens (muss übereinstimmen mit dem Zeitstempel der Ticket-Notizen)"
+            + "<li>Pflichtfelder: Zugewiesen an, "
+            + appConfig.getRedmine().getProtocol().getMandatory().stream().collect(Collectors.joining(", ")) + "</ul>";
         return wrapHtml(body);
     }
 
