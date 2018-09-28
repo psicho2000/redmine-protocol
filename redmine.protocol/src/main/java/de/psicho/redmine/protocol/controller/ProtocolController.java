@@ -164,10 +164,9 @@ public class ProtocolController {
         byte[] pdf = IOUtils.toByteArray(inputStream);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=" + getProtocolFileName(protocolStartDate));
+        headers.add("Content-Disposition", "inline; filename=" + getProtocolFileName(protocolStartDate));
 
         return ResponseEntity.ok().headers(headers).body(pdf);
-
     }
 
     private void addDescription(List<IssueJournalWrapper> topJournals) {
