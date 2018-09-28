@@ -175,10 +175,12 @@ public class ProtocolController {
             result.append(linkUtils.getShortLink(Integer.parseInt(responseInfo.getIssueId())));
             result.append("<br/>am ");
             result.append(responseInfo.getIsoDate());
-            result.append("<br/><h3>StatusItems: ");
-            result.append(responseInfo.getStatusJournals().size());
-            result.append("</h3> ");
-            responseInfo.getStatusJournals().forEach(issueInfoAppender);
+            if (responseInfo.getStatusJournals().size() > 0) {
+                result.append("<br/><h3>StatusItems: ");
+                result.append(responseInfo.getStatusJournals().size());
+                result.append("</h3> ");
+                responseInfo.getStatusJournals().forEach(issueInfoAppender);
+            }
             result.append("<br/><h3>TopItems: ");
             result.append(responseInfo.getTopJournals().size());
             result.append("</h3> ");
