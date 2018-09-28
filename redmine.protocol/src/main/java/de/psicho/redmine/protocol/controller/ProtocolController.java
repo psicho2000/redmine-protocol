@@ -11,7 +11,7 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
@@ -99,7 +99,7 @@ public class ProtocolController {
 
     @RequestMapping("/")
     public String info() {
-        // FIXME read tracker type and mandatory from configuration
+        // FIXME read tracker type and mandatory fields from configuration
         String body =
             "Erzeugt ein Protokoll für ein Redmine Protokoll-Ticket.<br /><br />" + "Verwendung: /protocol/{protocolId}<br />"
                 + "Gegeben:<br /><ul><li>Offenes Ticket vom Tracker \"Protokoll\"<li>Titel beliebig"
@@ -169,6 +169,20 @@ public class ProtocolController {
         return ResponseEntity.ok().headers(headers).body(pdf);
     }
 
+    // application/pdf works for docx, aswell, but application/octet-stream is never working - strange
+    @RequestMapping(value = "/protocol/{protocolId}/download/{issueId}/{fileName}.{extension}", produces = APPLICATION_PDF_VALUE)
+    public ResponseEntity<byte[]> downloadAttachment(@PathVariable String protocolId, @PathVariable Integer issueId,
+        @PathVariable String fileName, @PathVariable String extension) throws IOException {
+
+        String fullFilename = fileName + "." + extension;
+        byte[] binaryAttachment = attachmentHandler.getAttachment(issueId, fullFilename);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentDispositionFormData("attachment", fullFilename);
+
+        return ResponseEntity.ok().headers(headers).body(binaryAttachment);
+    }
+
     private void addDescription(List<IssueJournalWrapper> topJournals) {
         for (IssueJournalWrapper topJournal : topJournals) {
             Integer firstJournalId = issueDao.getFirstNonEmptyJournalByIssueId(topJournal.getIssueId());
@@ -184,7 +198,7 @@ public class ProtocolController {
     }
 
     private String createResponse(ResponseInfo responseInfo, Exception thrownException, boolean autoclose) {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
 
         if (thrownException instanceof ValidationException || thrownException instanceof IssueProcessingException) {
             result.append(thrownException.getMessage());
@@ -193,9 +207,6 @@ public class ProtocolController {
             result.append(ExceptionUtils.getStackTrace(thrownException));
             result.append("</pre>");
         } else {
-            Consumer<IssueJournalWrapper> issueInfoAppender = issue -> result.append("<br>")
-                .append(linkUtils.getShortLink(issue.getIssueId())).append(": ").append(issue.getIssueSubject());
-
             result.append("Erzeuge Protokoll für Ticket: ");
             result.append(linkUtils.getShortLink(Integer.parseInt(responseInfo.getIssueId())));
             result.append("<br/>am ");
@@ -204,34 +215,49 @@ public class ProtocolController {
                 result.append("<br/><h3>Status: ");
                 result.append(responseInfo.getStatusJournals().size());
                 result.append("</h3> ");
-                responseInfo.getStatusJournals().forEach(issueInfoAppender);
+                result.append(augmentIssueInfo(responseInfo.getStatusJournals(), responseInfo.getAttachedFiles()));
             }
             result.append("<br/><h3>TOP: ");
             result.append(responseInfo.getTopJournals().size());
             result.append("</h3> ");
-            responseInfo.getTopJournals().forEach(issueInfoAppender);
-            String path = ServletUriComponentsBuilder.fromCurrentRequest().build().toString();
+            result.append(augmentIssueInfo(responseInfo.getTopJournals(), responseInfo.getAttachedFiles()));
             result.append("<p><a href=\"");
-            result.append(path);
+            result.append(getCurrentPath());
             result.append("/preview\">PDF Vorschau</a></p>");
-            result.append(showAttachedFiles(responseInfo.getAttachedFiles()));
             result.append("<p><br/>Protokoll wurde ");
             result.append(autoclose ? "<strong>geschlossen</strong>." : "<strong>nicht</strong> geschlossen.");
             if (!autoclose) {
-                result.append(
-                    format("<br/>Protokoll schließen mit Parameter: <a href=\"%1$s?%2$s\">%2$s</a>", path, AUTOCLOSE_TRUE));
+                result.append(format("<br/>Protokoll schließen mit Parameter: <a href=\"%1$s?%2$s\">%2$s</a>", getCurrentPath(),
+                    AUTOCLOSE_TRUE));
             }
         }
 
         return wrapHtml(result.toString());
     }
 
-    private String showAttachedFiles(Set<AttachedFile> attachedFiles) {
-        for (AttachedFile attachedFile : attachedFiles) {
-            byte[] binaryAttachment = attachmentHandler.getAttachment(attachedFile.getIssueId(), attachedFile.getFileName());
-            ByteArrayResource byteArrayResource = new ByteArrayResource(binaryAttachment);
+    private String getCurrentPath() {
+        return ServletUriComponentsBuilder.fromCurrentRequest().build().toString();
+    }
+
+    private StringBuilder augmentIssueInfo(List<IssueJournalWrapper> issueJournals, Set<AttachedFile> attachedFiles) {
+        StringBuilder result = new StringBuilder();
+        for (IssueJournalWrapper issueJournal : issueJournals) {
+            Integer issueId = issueJournal.getIssueId();
+            result.append("<br/>").append(linkUtils.getShortLink(issueId)).append(": ").append(issueJournal.getIssueSubject());
+
+            Set<AttachedFile> filteredFiles =
+                attachedFiles.stream().filter(file -> file.getIssueId().equals(issueId)).collect(Collectors.toSet());
+            if (!filteredFiles.isEmpty()) {
+                result.append("<ul>");
+                for (AttachedFile file : filteredFiles) {
+                    String fileName = file.getFileName();
+                    result.append("<li><a href=\"").append(getCurrentPath()).append("/download/").append(issueId).append("/")
+                        .append(fileName).append("\">").append(fileName).append("</a>");
+                }
+                result.append("</ul>");
+            }
         }
-        return null;
+        return result;
     }
 
     private void closeProtocol(Issue protocol) {
