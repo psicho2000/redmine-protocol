@@ -70,9 +70,9 @@ public class Validator {
         return validation;
     }
 
-    public Issue validate(String issueId) {
+    Issue validate(String issueId) {
         Validation validation = validateIssueId(issueId);
-        if (!validation.isEmpty()) {
+        if (validation.isNotEmpty()) {
             throw new ValidationException(validation.render());
         }
 
@@ -82,7 +82,7 @@ public class Validator {
         }
 
         validation = validateProtocol(protocol);
-        if (!validation.isEmpty()) {
+        if (validation.isNotEmpty()) {
             throw new ValidationException(validation.render());
         }
         return protocol;

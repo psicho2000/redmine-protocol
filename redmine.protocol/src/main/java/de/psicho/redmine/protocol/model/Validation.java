@@ -8,7 +8,7 @@ import lombok.Getter;
 public class Validation {
 
     @Getter
-    List<String> messages = new ArrayList<String>();
+    List<String> messages = new ArrayList<>();
 
     public void add(String msg) {
         messages.add(msg);
@@ -19,16 +19,16 @@ public class Validation {
     }
 
     public String render() {
-        StringBuilder output = new StringBuilder();
+        StringBuilder output = new StringBuilder("<ol>");
 
         for (String line : messages) {
-            output.append("<li>" + line + "</li>");
+            output.append("<li>").append(line).append("</li>");
         }
 
-        return "<ol>" + output.toString() + "</ol>";
+        return output.append("</ol>").toString();
     }
 
-    public boolean isEmpty() {
-        return messages.size() == 0;
+    public boolean isNotEmpty() {
+        return messages.size() != 0;
     }
 }
