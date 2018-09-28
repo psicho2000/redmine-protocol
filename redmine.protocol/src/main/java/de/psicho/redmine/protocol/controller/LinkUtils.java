@@ -22,7 +22,7 @@ public class LinkUtils {
 
     String getLongLink(Integer issueId) {
         String linkToProtocol = appConfig.getRedmine().getIssues().getLink() + issueId;
-        return format("<a href=\"%s\">%s</a>", linkToProtocol, linkToProtocol);
+        return format("<a href=\"%1$s\">%1$s</a>", linkToProtocol);
     }
 
 }

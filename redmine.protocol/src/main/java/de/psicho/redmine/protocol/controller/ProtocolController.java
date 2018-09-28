@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.taskadapter.redmineapi.bean.Issue;
 import com.taskadapter.redmineapi.bean.Journal;
@@ -48,6 +49,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class ProtocolController {
+
+    public static final String AUTOCLOSE = "autoclose=1";
 
     @NonNull
     private ProtocolService protocolService;
@@ -165,11 +168,11 @@ public class ProtocolController {
             result.append(ExceptionUtils.getStackTrace(thrownException));
             result.append("</pre>");
         } else {
-            Consumer<IssueJournalWrapper> issueInfoAppender =
-                issue -> result.append("<br>").append(issue.getIssueId()).append(": ").append(issue.getIssueSubject());
+            Consumer<IssueJournalWrapper> issueInfoAppender = issue -> result.append("<br>")
+                .append(linkUtils.getShortLink(issue.getIssueId())).append(": ").append(issue.getIssueSubject());
 
             result.append("Erzeuge Protokoll für Ticket: ");
-            result.append(responseInfo.getIssueId());
+            result.append(linkUtils.getShortLink(Integer.parseInt(responseInfo.getIssueId())));
             result.append("<br/>am ");
             result.append(responseInfo.getIsoDate());
             result.append("<br/><h3>StatusItems: ");
@@ -183,7 +186,8 @@ public class ProtocolController {
             result.append("<p><br/>Protokoll wurde ");
             result.append(autoclose ? "<strong>geschlossen</strong>." : "<strong>nicht</strong> geschlossen.");
             if (!autoclose) {
-                result.append("<br/>Protokoll schließen mit Parameter: autoclose=1");
+                String path = ServletUriComponentsBuilder.fromCurrentRequest().build().toString();
+                result.append(format("<br/>Protokoll schließen mit Parameter: <a href=\"%1$s?%2$s\">%2$s</a>", path, AUTOCLOSE));
             }
         }
 
