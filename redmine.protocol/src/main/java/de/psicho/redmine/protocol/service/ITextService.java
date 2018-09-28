@@ -1,5 +1,7 @@
 package de.psicho.redmine.protocol.service;
 
+import static java.lang.String.format;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Date;
@@ -28,9 +30,11 @@ import de.psicho.redmine.iTextile.command.TextProperty;
 import de.psicho.redmine.protocol.api.IssueHandler;
 import de.psicho.redmine.protocol.config.AppConfig;
 import de.psicho.redmine.protocol.config.Protocol;
+import de.psicho.redmine.protocol.controller.IssueProcessingException;
 import de.psicho.redmine.protocol.model.AttachedFile;
 import de.psicho.redmine.protocol.model.IssueJournalWrapper;
 import de.psicho.redmine.protocol.utils.DateUtils;
+import de.psicho.redmine.protocol.utils.LinkUtils;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import net.java.textilej.parser.markup.textile.TextileDialect;
@@ -49,6 +53,9 @@ public class ITextService {
 
     @NonNull
     private ProtocolService protocolService;
+
+    @NonNull
+    private LinkUtils linkUtils;
 
     private Protocol redmineProtocol;
 
@@ -89,7 +96,8 @@ public class ITextService {
             content = postProcessContent(content);
             Integer assignee = top.getAssignee();
             if (assignee == null || assignee == 0) {
-                throw new RuntimeException(String.format("Das Ticket #%d wurde niemandem zugewiesen!", top.getIssueId()));
+                throw new IssueProcessingException(
+                    format("Das Ticket %s wurde niemandem zugewiesen!", linkUtils.getShortLink(top.getIssueId())));
             }
             String responsible = protocolService.getProtocolUser(assignee);
             iTextile.addTableRow(number, title + content, responsible);

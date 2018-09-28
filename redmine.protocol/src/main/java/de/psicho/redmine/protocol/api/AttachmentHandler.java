@@ -12,18 +12,23 @@ import com.taskadapter.redmineapi.AttachmentManager;
 import com.taskadapter.redmineapi.RedmineException;
 import com.taskadapter.redmineapi.bean.Attachment;
 
+import de.psicho.redmine.protocol.controller.IssueProcessingException;
 import de.psicho.redmine.protocol.db.model.DbAttachment;
 import de.psicho.redmine.protocol.repository.AttachmentRepository;
+import de.psicho.redmine.protocol.utils.LinkUtils;
 
 @Component
 public class AttachmentHandler {
 
+    // we have to use Autowired as we want to use a specific constructor
+    @Autowired
+    private AttachmentRepository attachmentRepository;
+    @Autowired
+    private LinkUtils linkUtils;
+
     private static final String CONTENT_TYPE = "application/pdf";
 
     private AttachmentManager attachmentManager = null;
-
-    @Autowired
-    private AttachmentRepository attachmentRepository;
 
     public AttachmentHandler(RedmineHandler redmineHandler) {
         attachmentManager = redmineHandler.getRedmineManager().getAttachmentManager();
@@ -41,8 +46,8 @@ public class AttachmentHandler {
         try {
             DbAttachment dbAttachment = attachmentRepository.findByContainerIdAndFilename(issueId, attachmentFileName);
             if (dbAttachment == null) {
-                throw new IllegalArgumentException(
-                    format("Attachment not found for issue id %d and filename '%s'.", issueId, attachmentFileName));
+                throw new IssueProcessingException(format("Für das Ticket %s wurde der Anhang '%s' nicht gefunden.",
+                    linkUtils.getShortLink(issueId), attachmentFileName));
             }
             Attachment attachment = attachmentManager.getAttachmentById(dbAttachment.getId());
             return attachmentManager.downloadAttachmentContent(attachment);

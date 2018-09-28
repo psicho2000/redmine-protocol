@@ -41,6 +41,7 @@ import de.psicho.redmine.protocol.model.IssueJournalWrapper;
 import de.psicho.redmine.protocol.service.ITextService;
 import de.psicho.redmine.protocol.service.ProtocolService;
 import de.psicho.redmine.protocol.utils.DateUtils;
+import de.psicho.redmine.protocol.utils.LinkUtils;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,7 +51,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ProtocolController {
 
-    public static final String AUTOCLOSE = "autoclose=1";
+    private static final String AUTOCLOSE = "autoclose=1";
 
     @NonNull
     private ProtocolService protocolService;
@@ -133,7 +134,7 @@ public class ProtocolController {
 
             responseInfo = ResponseInfo.builder().issueId(issueId).isoDate(isoDate).statusJournals(statusJournals)
                 .topJournals(topJournals).build();
-        } catch (ValidationException ex) {
+        } catch (ValidationException | IssueProcessingException ex) {
             exception = ex;
             log.error(ex.getMessage());
         } catch (Exception ex) {
@@ -161,7 +162,7 @@ public class ProtocolController {
     private String createResponse(ResponseInfo responseInfo, Exception thrownException, boolean autoclose) {
         StringBuffer result = new StringBuffer();
 
-        if (thrownException instanceof ValidationException) {
+        if (thrownException instanceof ValidationException || thrownException instanceof IssueProcessingException) {
             result.append(thrownException.getMessage());
         } else if (thrownException != null) {
             result.append("<pre>");

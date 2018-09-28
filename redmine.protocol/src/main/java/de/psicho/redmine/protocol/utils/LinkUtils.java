@@ -1,4 +1,4 @@
-package de.psicho.redmine.protocol.controller;
+package de.psicho.redmine.protocol.utils;
 
 import static java.lang.String.format;
 
@@ -15,12 +15,12 @@ public class LinkUtils {
     @NonNull
     private AppConfig appConfig;
 
-    String getShortLink(Integer issueId) {
+    public String getShortLink(Integer issueId) {
         String linkToProtocol = appConfig.getRedmine().getIssues().getLink() + issueId;
         return format("<a href=\"%s\">%s</a>", linkToProtocol, issueId);
     }
 
-    String getLongLink(Integer issueId) {
+    public String getLongLink(Integer issueId) {
         String linkToProtocol = appConfig.getRedmine().getIssues().getLink() + issueId;
         return format("<a href=\"%1$s\">%1$s</a>", linkToProtocol);
     }

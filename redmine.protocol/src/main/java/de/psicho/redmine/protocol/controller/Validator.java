@@ -13,6 +13,7 @@ import de.psicho.redmine.protocol.api.IssueHandler;
 import de.psicho.redmine.protocol.config.AppConfig;
 import de.psicho.redmine.protocol.config.Protocol;
 import de.psicho.redmine.protocol.model.Validation;
+import de.psicho.redmine.protocol.utils.LinkUtils;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
