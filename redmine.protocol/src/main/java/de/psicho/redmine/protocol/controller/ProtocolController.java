@@ -51,7 +51,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ProtocolController {
 
-    private static final String AUTOCLOSE = "autoclose=1";
+    private static final String AUTOCLOSE = "autoclose";
+    private static final String AUTOCLOSE_TRUE = AUTOCLOSE + "=1";
 
     @NonNull
     private ProtocolService protocolService;
@@ -103,7 +104,7 @@ public class ProtocolController {
 
     @RequestMapping("/protocol/{issueId}")
     public String createProtocol(@PathVariable String issueId,
-        @RequestParam(name = "autoclose", defaultValue = "false") boolean autoclose) {
+        @RequestParam(name = AUTOCLOSE, defaultValue = "false") boolean autoclose) {
 
         ResponseInfo responseInfo = null;
         Exception exception = null;
@@ -190,7 +191,8 @@ public class ProtocolController {
             result.append(autoclose ? "<strong>geschlossen</strong>." : "<strong>nicht</strong> geschlossen.");
             if (!autoclose) {
                 String path = ServletUriComponentsBuilder.fromCurrentRequest().build().toString();
-                result.append(format("<br/>Protokoll schließen mit Parameter: <a href=\"%1$s?%2$s\">%2$s</a>", path, AUTOCLOSE));
+                result.append(
+                    format("<br/>Protokoll schließen mit Parameter: <a href=\"%1$s?%2$s\">%2$s</a>", path, AUTOCLOSE_TRUE));
             }
         }
 
