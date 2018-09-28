@@ -176,12 +176,12 @@ public class ProtocolController {
             result.append("<br/>am ");
             result.append(responseInfo.getIsoDate());
             if (responseInfo.getStatusJournals().size() > 0) {
-                result.append("<br/><h3>StatusItems: ");
+                result.append("<br/><h3>Status: ");
                 result.append(responseInfo.getStatusJournals().size());
                 result.append("</h3> ");
                 responseInfo.getStatusJournals().forEach(issueInfoAppender);
             }
-            result.append("<br/><h3>TopItems: ");
+            result.append("<br/><h3>TOP: ");
             result.append(responseInfo.getTopJournals().size());
             result.append("</h3> ");
             responseInfo.getTopJournals().forEach(issueInfoAppender);
