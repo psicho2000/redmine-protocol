@@ -3,8 +3,11 @@ package de.psicho.redmine.protocol.controller;
 import static de.psicho.redmine.protocol.service.ProtocolService.getProtocolFileName;
 import static de.psicho.redmine.protocol.service.ProtocolService.getProtocolPath;
 import static java.lang.String.format;
+import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -14,10 +17,13 @@ import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -130,8 +136,8 @@ public class ProtocolController {
 
             if (autoclose) {
                 closeProtocol(protocol);
+                sendProtocol(protocol, attachedFiles);
             }
-            sendProtocol(protocol, attachedFiles);
 
             responseInfo = ResponseInfo.builder().issueId(issueId).isoDate(isoDate).statusJournals(statusJournals)
                 .topJournals(topJournals).build();
@@ -144,6 +150,24 @@ public class ProtocolController {
         }
 
         return createResponse(responseInfo, exception, autoclose);
+    }
+
+    @RequestMapping(value = "/protocol/{issueId}/preview", produces = APPLICATION_PDF_VALUE)
+    public ResponseEntity<byte[]> previewProtocol(@PathVariable String issueId) throws IOException {
+        int ticketId = Integer.parseInt(issueId);
+        Issue protocol = issueHandler.getIssue(ticketId);
+        Date protocolStartDate = protocol.getStartDate();
+
+        File pdfFile = new File(getProtocolPath(protocolStartDate));
+        FileSystemResource fileSystemResource = new FileSystemResource(pdfFile);
+        InputStream inputStream = fileSystemResource.getInputStream();
+        byte[] pdf = IOUtils.toByteArray(inputStream);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=" + getProtocolFileName(protocolStartDate));
+
+        return ResponseEntity.ok().headers(headers).body(pdf);
+
     }
 
     private void addDescription(List<IssueJournalWrapper> topJournals) {
@@ -187,10 +211,13 @@ public class ProtocolController {
             result.append(responseInfo.getTopJournals().size());
             result.append("</h3> ");
             responseInfo.getTopJournals().forEach(issueInfoAppender);
+            String path = ServletUriComponentsBuilder.fromCurrentRequest().build().toString();
+            result.append("<p><a href=\"");
+            result.append(path);
+            result.append("/preview\">PDF Vorschau</a></p>");
             result.append("<p><br/>Protokoll wurde ");
             result.append(autoclose ? "<strong>geschlossen</strong>." : "<strong>nicht</strong> geschlossen.");
             if (!autoclose) {
-                String path = ServletUriComponentsBuilder.fromCurrentRequest().build().toString();
                 result.append(
                     format("<br/>Protokoll schließen mit Parameter: <a href=\"%1$s?%2$s\">%2$s</a>", path, AUTOCLOSE_TRUE));
             }

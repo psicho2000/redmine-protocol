@@ -26,19 +26,19 @@ redmine:
     name: Protokoll
     closed: Erledigt
     mandatory:
-      - Nummer
-      - Anwesend
-      - Essen
-      - Ort
-      - Moderation
-      - Andacht
+    - Nummer
+    - Anwesend
+    - Essen
+    - Ort
+    - Moderation
+    - Andacht
     members:
-      - Alberto
-      - Ann
-      - Anne
-      - Markus
-      - Paul
-      - Stefan
+    - Alberto
+    - Ann
+    - Anne
+    - Markus
+    - Paul
+    - Stefan
     fields:
       number: Nummer
       participants: Anwesend
@@ -47,6 +47,6 @@ redmine:
       moderation: Moderation
       devotion: Andacht
   mail:
-    recipient: markus.d.meier@gmail.com
+    recipient: gemeinderat@lifeline-herne.de
     subject: Protokoll vom Gemeinderat am %s
     body: Hallo lieber Gemeinderat,<br/><br/>anbei das Protokoll von unserer Sitzung am %s.<br/>Es kann auch online eingesehen werden unter %s.<br/><br/>Vielen Dank für eure Mitarbeit!<br/><br/>Liebe Grüße,<br/>Euer Markus

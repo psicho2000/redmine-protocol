@@ -21,6 +21,11 @@
             <version>3.0.0</version>
         </dependency>
         <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.6</version>
+        </dependency>
+        <dependency>
             <groupId>de.psicho</groupId>
             <artifactId>redmine.iTextile</artifactId>
             <version>1.1.1</version>
