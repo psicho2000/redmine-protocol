@@ -12,5 +12,3 @@ Reorganize ProtocolController
  1. Remove dependency of TextileDialect: use enum instead
  1. Move dependency of itextpdf to separate package
  1. Move dependency of taskadapter to separate package
- 
- Test
