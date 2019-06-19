@@ -85,9 +85,10 @@ public class ITextService {
         for (IssueJournalWrapper top : topJournals) {
             String number = setIssueLinks("#" + top.getIssueId().toString());
             String title = "*" + top.getIssueSubject().trim() + "*\r\n";
-            String content;
+            // adding an additional new line is necessary for potential headers (otherwise Markdown won't recognize them)
+            String content = "\r\n";
             if (top.getJournal() != null) {
-                content = top.getJournal().getNotes();
+                content += top.getJournal().getNotes();
             } else {
                 Issue issue = issueHandler.getIssue(top.getIssueId());
                 content = issue.getDescription();
