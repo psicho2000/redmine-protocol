@@ -2,9 +2,10 @@
 .recommenders
 _Resources
 RemoteSystemsTempFiles
+/**/results
 /**/target/
 /**/.settings/
 /**/*.iml
 /**/.idea
-/**/redmine-protocol.log
+redmine.protocol.log
 /redmine.protocol/src/main/resources/application-development.yml
