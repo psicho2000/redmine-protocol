@@ -324,7 +324,7 @@ public class ProtocolController {
     }
 
     private String wrapHtml(String body) {
-        String style = ResourceUtils.readResource("style.css");
+        String style = ResourceUtils.readResource("protocol.style.css");
         return format("<!DOCTYPE html><html><head><style>%s</style></head><body>%s</body><footer>%s</footer></html>", style, body,
             FOOTER);
     }
