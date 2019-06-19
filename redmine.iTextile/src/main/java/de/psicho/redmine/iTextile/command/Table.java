@@ -188,8 +188,8 @@ public class Table implements Command {
         }
 
         List<Cell> cells = IntStream.range(0, rowSize)
-            .mapToObj(i -> new Cell(cellsContent.get(i), columnFormatting.get(i), columnDialect.get(i)))
-            .collect(Collectors.toList());
+                                    .mapToObj(i -> new Cell(cellsContent.get(i), columnFormatting.get(i), columnDialect.get(i)))
+                                    .collect(Collectors.toList());
 
         Row row = new Row(cells);
         row.setBackgroundColor(backgroundColor);
