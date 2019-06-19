@@ -91,7 +91,7 @@ public class ITextService {
                 content += top.getJournal().getNotes();
             } else {
                 Issue issue = issueHandler.getIssue(top.getIssueId());
-                content = issue.getDescription();
+                content += issue.getDescription();
             }
             result.addAll(extractAttachments(content, top.getIssueId()));
             content = postProcessContent(content);
