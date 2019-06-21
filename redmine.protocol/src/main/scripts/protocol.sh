@@ -7,7 +7,7 @@
 # author: Markus Meier
 # date:   2018-03-05
 # helpful alias:
-#     alias protocol=/path/to/this/script.sh
+#     alias redmine-protocol=/path/to/this/script.sh
 #######################################################
 
 # global variables
