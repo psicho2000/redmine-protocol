@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.taskadapter.redmineapi.AttachmentManager;
 import com.taskadapter.redmineapi.RedmineException;
@@ -16,6 +17,7 @@ import de.psicho.redmine.protocol.db.model.DbAttachment;
 import de.psicho.redmine.protocol.repository.AttachmentRepository;
 import de.psicho.redmine.protocol.utils.LinkUtils;
 
+@Component
 public class AttachmentHandler {
 
     // we have to use Autowired as we want to use a specific constructor
