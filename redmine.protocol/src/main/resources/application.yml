@@ -39,12 +39,7 @@ redmine:
       - Moderation
       - Andacht
     members:
-      - Alberto
-      - Ann
-      - Anne
-      - Markus
-      - Paul
-      - Stefan
+      - person_x
     fields:
       number: Nummer
       participants: Anwesend
