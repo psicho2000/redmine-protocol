@@ -2,15 +2,12 @@ package de.psicho.redmine.protocol.api;
 
 import java.util.List;
 
-import org.springframework.stereotype.Component;
-
 import com.taskadapter.redmineapi.Include;
 import com.taskadapter.redmineapi.IssueManager;
 import com.taskadapter.redmineapi.RedmineException;
 import com.taskadapter.redmineapi.bean.Issue;
 import com.taskadapter.redmineapi.bean.IssueStatus;
 
-@Component
 public class IssueHandler {
 
     private IssueManager issueManager = null;

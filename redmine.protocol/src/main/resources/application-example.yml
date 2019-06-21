@@ -9,10 +9,10 @@ spring:
     validationQuery: SELECT 1
   mail:
     password: <mail password>
-security:
-  user:
-    name: <basic auth name>
-    password: <basic auth password>
+  security:
+    user:
+      name: <basic auth name>
+      password: <basic auth password>
 redmine:
   api:
     accesskey: <redmine api accesskey>

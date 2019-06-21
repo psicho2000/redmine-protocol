@@ -1,12 +1,9 @@
 package de.psicho.redmine.protocol.api;
 
-import org.springframework.stereotype.Component;
-
 import com.taskadapter.redmineapi.RedmineException;
 import com.taskadapter.redmineapi.UserManager;
 import com.taskadapter.redmineapi.bean.User;
 
-@Component
 public class UserHandler {
 
     private UserManager userManager = null;
